@@ -1,60 +1,76 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <title>生日快樂 ✨</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>生日快樂 🎉</title>
   <style>
     body {
-      background: #fff0f5;
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+      overflow: hidden;
+      color: white;
       font-family: 'Segoe UI', sans-serif;
       text-align: center;
-      padding: 50px;
-      overflow: hidden;
+      padding-top: 100px;
     }
+
     h1 {
-      color: #e91e63;
       font-size: 3em;
-      animation: glow 2s infinite alternate;
+      margin-bottom: 10px;
     }
+
     p {
-      font-size: 1.3em;
-      color: #333;
-      margin: 20px auto;
-      max-width: 500px;
+      font-size: 1.5em;
+      margin-bottom: 30px;
     }
-    @keyframes glow {
-      from { text-shadow: 0 0 10px #ff80ab; }
-      to { text-shadow: 0 0 20px #e91e63; }
-    }
+
     .star {
       position: absolute;
-      width: 6px;
-      height: 6px;
+      width: 2px;
+      height: 2px;
       background: white;
       border-radius: 50%;
-      animation: twinkle 3s infinite ease-in-out;
+      animation: fall 3s linear infinite;
     }
-    @keyframes twinkle {
-      0%, 100% { opacity: 0.2; }
-      50% { opacity: 1; }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh);
+        opacity: 0;
+      }
     }
   </style>
 </head>
 <body>
   <h1>生日快樂 ✨</h1>
-  <p>希望你今天被溫柔以待，<br>未來如星光般閃亮。<br><br>Suprise~~ 希望你喜歡 :)</p>
+  <p>希望你今天被溫柔以待，<br/>未來如星光般閃亮 🌟</p>
+  <p>Surprise~~ 希望你喜歡 🎁</p>
 
-  <audio autoplay loop>
-    <source src="https://www.bensound.com/bensound-music/bensound-memories.mp3" type="audio/mpeg">
+  <!-- 音樂播放器（自動播放 + JavaScript 啟動） -->
+  <audio id="bg-music" loop>
+    <source src="https://cdn.pixabay.com/audio/2023/03/16/audio_1d6bde29b0.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
 
   <script>
-    for (let i = 0; i < 50; i++) {
+    // 點擊畫面任意處播放音樂（因為自動播放限制）
+    document.addEventListener('click', () => {
+      const audio = document.getElementById('bg-music');
+      audio.play().catch(e => console.log('Autoplay blocked:', e));
+    });
+
+    // 產生星星動畫
+    for (let i = 0; i < 80; i++) {
       const star = document.createElement('div');
       star.className = 'star';
-      star.style.top = `${Math.random() * 100}%`;
-      star.style.left = `${Math.random() * 100}%`;
+      star.style.top = `${Math.random() * 100}vh`;
+      star.style.left = `${Math.random() * 100}vw`;
       star.style.animationDelay = `${Math.random() * 3}s`;
       document.body.appendChild(star);
     }
