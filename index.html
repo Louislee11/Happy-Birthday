@@ -42,9 +42,9 @@
   <script>
     // 星星
     const bg = document.getElementById('background');
-    for(let i=0;i<100;i++){const s=document.createElement('div');s.className='star';s.style.top=Math.random()*100+'vh';s.style.left=Math.random()*100+'vw';s.style.animationDelay=Math.random()*1+'s';bg.appendChild(s);}    
+    for(let i=0;i<100;i++){const s=document.createElement('div');s.className='star';s.style.top=Math.random()*100+'vh';s.style.left=Math.random()*100+'vw';s.style.animationDelay=Math.random()*3+'s';bg.appendChild(s);}    
     // 流星
-    for(let i=0;i<7;i++){const m=document.createElement('div');m.className='meteor';if(Math.random()<0.5){m.style.left='-20%';m.style.top=Math.random()*100+'vh';}else{m.style.top='-20%';m.style.left=Math.random()*100+'vw';}m.style.animationDelay=Math.random()*2+'s';bg.appendChild(m);}    
+    for(let i=0;i<7;i++){const m=document.createElement('div');m.className='meteor';if(Math.random()<0.5){m.style.left='-20%';m.style.top=Math.random()*100+'vh';}else{m.style.top='-20%';m.style.left=Math.random()*100+'vw';}m.style.animationDelay=Math.random()*5+'s';bg.appendChild(m);}    
     // 煙花
     const canvas=document.getElementById('fireworks'),ctx=canvas.getContext('2d');canvas.width=window.innerWidth;canvas.height=window.innerHeight;
     class Firework{constructor(){this.p=[];this.h=Math.random()*360;const x=Math.random()*canvas.width,y=Math.random()*canvas.height/2;for(let i=0;i<30;i++){const a=Math.random()*2*Math.PI,v=Math.random()*3+2;this.p.push({x,y,dx:Math.cos(a)*v,dy:Math.sin(a)*v,a:1});}}}
