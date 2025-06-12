@@ -53,18 +53,18 @@
     }
     // 產生 7 條流星且分散
     for (let i = 0; i < 7; i++) {
-      const m = document.createElement('div');
-      m.className = 'meteor';
-      // 隨機起始點在邊緣
-      if (Math.random() < 0.5) {
-        m.style.top = Math.random() * 100 + '%';
-        m.style.left = '-20%';
-      } else {
-        m.style.top = '100%';
-        m.style.left = Math.random() * 100 + '%';
-      }
-      m.style.animationDelay = Math.random() * 5 + 's';
-      bg.appendChild(m);
+      const meteor = document.createElement('div');
+      meteor.className = 'meteor';
+  
+      // 隨機分佈右上角，讓它能斜切左下
+      const startX = 100 + Math.random() * 20; // 從右邊邊緣再多一點，避免馬上可見
+      const startY = Math.random() * 50; // 上半區域
+  
+      meteor.style.left = `${startX}vw`;
+      meteor.style.top = `${startY}vh`;
+  
+      meteor.style.setProperty('--delay', `${Math.random() * 5}s`);
+      document.body.appendChild(meteor);
     }
     // 煙花初始化
     const canvas = document.getElementById('fireworks'), ctx = canvas.getContext('2d');
