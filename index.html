@@ -34,7 +34,7 @@
       position: absolute;
       width: 120px;
       height: 2px;
-      background: linear-gradient(-135deg, white, transparent);
+      background: linear-gradient(270deg, white, transparent);
       opacity: 0;
       transform: rotate(-135deg);
       animation: shoot 4s linear infinite;
@@ -42,11 +42,11 @@
 
     @keyframes shoot {
       0% {
-        transform: translate(100vw, 20vh) rotate(-135deg);
+        transform: translate(100vw, -20vh) rotate(-135deg);
         opacity: 1;
       }
       100% {
-        transform: translate(10vw, 100vh) rotate(-135deg);
+        transform: translate(-10vw, 100vh) rotate(-135deg);
         opacity: 0;
       }
     }
