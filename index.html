@@ -44,12 +44,16 @@
       height: 100vh;
       flex-direction: column;
       text-align: center;
+      position: relative;
+      z-index: 2;
     }
     .gift-box {
-      width: 200px;
-      height: 200px;
-      background-image: url('https://lottie.host/embed/93bb7002-761e-47b6-8915-6f479d9ce6e6/1qO9yOBQXG.json');
+      width: 180px;
+      height: 180px;
+      background-image: url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaXlmNXRyYzMyczh3NG4xa2RzeHk1N3JtazZibXhlMG90ZmV0ajhzdyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/3ohhwytHcusSCXXOUg/giphy.gif');
       background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
       cursor: pointer;
       animation: pulse 2s infinite;
     }
@@ -72,6 +76,7 @@
       opacity: 0;
       transition: opacity 1s;
       padding: 0 20px;
+      margin-top: 2rem;
     }
     .show {
       opacity: 1;
@@ -87,7 +92,7 @@
   </div>
 
   <audio id="bgm" loop>
-    <source src="birthday-song.mp3" type="audio/mpeg">
+    <source src="your-music.mp3" type="audio/mpeg">
   </audio>
 
   <script>
@@ -119,7 +124,7 @@
       hint.style.display = 'none';
       showText();
       bgm.play();
-      setInterval(showText, 4000);
+      setInterval(showText, 5000);
     });
 
     // create stars
