@@ -1,115 +1,250 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>生日驚喜 ✨</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>生日快樂 Surprise</title>
   <style>
-    html, body { margin:0; padding:0; width:100%; height:100%; background:#000; overflow:hidden; font-family:'Segoe UI',sans-serif; }
-    #background { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
-    .star, .meteor { position:absolute; pointer-events:none; }
-    .star { width:2px; height:2px; background:#fff; border-radius:50%; animation:twinkle 4s infinite ease-in-out; }
-    @keyframes twinkle {0%,100%{opacity:0.2;}50%{opacity:1;}}
-    .meteor { width:120px; height:2px; background:linear-gradient(to bottom right, white, transparent); transform:rotate(45deg); animation:meteor 2s linear infinite; }
-    @keyframes meteor { 0% { } 100% { top:110%; left:110%; opacity:0; } }
-    #fireworks { position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none; display:none; }
-    .container { position:relative; z-index:2; width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#fff; text-align:center; pointer-events:auto; padding: 1rem; }
-    #giftBox { width:200px; cursor:pointer; }
-    #hint { margin-top:10px; font-size:1.2rem; color:#ffeb3b; animation:blink 1.5s infinite; pointer-events:none; }
-    @keyframes blink {0%,100%{opacity:1;}50%{opacity:0.3;}}
-    #messageBox { display:none; font-size:1.8rem; text-align:center; opacity:1; line-height:1.8; background-color: rgba(0, 0, 0, 0.5); padding: 1.2rem 2rem; border-radius: 1.5rem; color: #fff3f3; max-width: 90%; margin-top: 1rem; }
-    .zoom { animation:zoomIn 1s ease-out forwards; }
-    @keyframes zoomIn { from{transform:scale(1);} to{transform:scale(3);} }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: black;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+    }
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.8;
+      animation: twinkle 2s infinite;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 1; }
+    }
+    .shooting-star {
+      position: absolute;
+      width: 120px;
+      height: 2px;
+      background: linear-gradient(120deg, white, transparent);
+      opacity: 0.7;
+      transform: rotate(45deg);
+      animation: shoot 2s linear infinite;
+    }
+    @keyframes shoot {
+      0% { transform: translate(0, 0) rotate(45deg); opacity: 1; }
+      100% { transform: translate(500px, 500px) rotate(45deg); opacity: 0; }
+    }
+    .gift-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+      text-align: center;
+      z-index: 10;
+    }
+    .gift-hint {
+      font-size: 1.2rem;
+      color: white;
+      animation: hintBlink 1.2s infinite;
+    }
+    @keyframes hintBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    .message-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 20;
+    }
+    .message {
+      font-size: 1.8rem;
+      white-space: nowrap;
+      opacity: 0;
+      animation: float 4s ease-in-out, glow 2s ease-in-out infinite alternate;
+    }
+    @keyframes float {
+      0% { transform: translateY(10px); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-10px); opacity: 0; }
+    }
+    @keyframes glow {
+      from { text-shadow: 0 0 5px #fff, 0 0 10px #ff99cc; }
+      to { text-shadow: 0 0 20px #ff66cc, 0 0 30px #ffccff; }
+    }
+    .final-message {
+      font-size: 2.2rem;
+      font-weight: bold;
+      animation: finalZoom 2s ease-in-out infinite alternate, glow 2s ease-in-out infinite alternate;
+    }
+    @keyframes finalZoom {
+      from { transform: scale(1); }
+      to { transform: scale(1.5); }
+    }
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 5;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
-  <div id="background"></div>
-  <canvas id="fireworks"></canvas>
-  <div class="container">
-    <img id="giftBox" src="gift.gif" alt="禮物盒">
-    <div id="hint">點我 🎁</div>
-    <div id="messageBox"></div>
-    <audio id="bgMusic" src="your-music.mp3" loop></audio>
-  </div>
-  <script>
-    const bg = document.getElementById('background');
-    for (let i = 0; i < 100; i++) {
-      const s = document.createElement('div');
-      s.className = 'star';
-      s.style.top = Math.random() * 100 + '%';
-      s.style.left = Math.random() * 100 + '%';
-      s.style.animationDelay = Math.random() * 4 + 's';
-      bg.appendChild(s);
-    }
-    for (let i = 0; i < 7; i++) {
-      const m = document.createElement('div');
-      m.className = 'meteor';
-      if (Math.random() < 0.5) {
-        m.style.left = '-10%';
-        m.style.top = Math.random() * 100 + '%';
-      } else {
-        m.style.top = '-10%';
-        m.style.left = Math.random() * 100 + '%';
-      }
-      m.style.animationDelay = Math.random() * 3 + 's';
-      bg.appendChild(m);
-    }
 
-    const canvas = document.getElementById('fireworks');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-    class Firework {
-      constructor() {
-        this.p = [];
-        this.h = Math.random() * 360;
-        const x = Math.random() * canvas.width, y = Math.random() * (canvas.height/2);
-        for (let i = 0; i < 30; i++) {
-          const a = Math.random() * 2 * Math.PI, v = Math.random() * 3 + 2;
-          this.p.push({x,y,dx:Math.cos(a)*v,dy:Math.sin(a)*v,a:1});
+<div class="gift-container" id="giftBox">
+  <img src="gift.gif" width="160" />
+  <div class="gift-hint">點我 🎁</div>
+</div>
+
+<div class="message-container" id="messageContainer"></div>
+
+<canvas id="fireworksCanvas"></canvas>
+
+<script>
+  // 🌟 產生星星背景
+  for (let i = 0; i < 100; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.top = `${Math.random() * 100}%`;
+    star.style.left = `${Math.random() * 100}%`;
+    star.style.animationDelay = `${Math.random() * 3}s`;
+    document.body.appendChild(star);
+  }
+
+  // 🌠 產生 7 條流星（從左上或上方往右下）
+  for (let i = 0; i < 7; i++) {
+    const shootingStar = document.createElement('div');
+    shootingStar.className = 'shooting-star';
+    const fromTop = Math.random() < 0.5;
+    shootingStar.style.top = fromTop ? `${Math.random() * 20}%` : `${80 + Math.random() * 10}%`;
+    shootingStar.style.left = fromTop ? `${Math.random() * 40}%` : `${Math.random() * 20}%`;
+    shootingStar.style.animationDelay = `${Math.random() * 4}s`;
+    document.body.appendChild(shootingStar);
+  }
+
+  const messages = [
+    "Surprise~~",
+    "無論是甜品還是這個",
+    "都是我一次弄哦",
+    "別嫌棄吖",
+    "不好吃也得吃!!",
+    "嘻嘻",
+    "希望你喜歡 💖",
+    "如果有一天過得不如意了",
+    "回來這裡看看唄",
+    "噢~對了",
+    "生日快樂 ✨"
+  ];
+
+  const giftBox = document.getElementById('giftBox');
+  const messageContainer = document.getElementById('messageContainer');
+
+  giftBox.addEventListener('click', () => {
+    giftBox.style.display = 'none';
+    document.querySelectorAll('.star, .shooting-star').forEach(el => el.remove());
+    launchFireworks();
+    showMessages();
+  });
+
+  function showMessages() {
+    let i = 0;
+    function showNext() {
+      const msg = document.createElement('div');
+      msg.className = i === messages.length - 1 ? 'final-message' : 'message';
+      messageContainer.innerHTML = '';
+      messageContainer.appendChild(msg);
+
+      let j = 0;
+      msg.textContent = '';
+      const interval = setInterval(() => {
+        msg.textContent += messages[i][j++];
+        if (j >= messages[i].length) {
+          clearInterval(interval);
+          setTimeout(() => {
+            i = (i + 1) % messages.length;
+            showNext();
+          }, 2200);
         }
-      }
+      }, 80);
     }
-    const fws = [];
-    function animateFW() {
-      requestAnimationFrame(animateFW);
-      ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.fillRect(0,0,canvas.width,canvas.height);
-      if (Math.random() < 0.05) fws.push(new Firework());
-      fws.forEach((fw,i) => {
-        fw.p.forEach(p => {
-          p.x += p.dx; p.y += p.dy; p.a -= 0.02;
-          ctx.beginPath(); ctx.arc(p.x,p.y,3,0,2*Math.PI);
-          ctx.fillStyle = `hsla(${fw.h},100%,60%,${p.a})`; ctx.fill();
-        });
-        if (fw.p.every(p=>p.a<=0)) fws.splice(i,1);
+    showNext();
+  }
+
+  // 🎆 煙花 Canvas
+  const canvas = document.getElementById('fireworksCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const fireworks = [];
+
+  function launchFireworks() {
+    setInterval(() => {
+      for (let i = 0; i < 3; i++) {
+        fireworks.push(createFirework());
+      }
+    }, 700);
+
+    requestAnimationFrame(drawFireworks);
+  }
+
+  function createFirework() {
+    const x = Math.random() * canvas.width;
+    const y = Math.random() * canvas.height / 2;
+    const particles = [];
+    const colors = ['#ff3', '#f0f', '#0ff', '#f66', '#6f6', '#ccf'];
+    for (let i = 0; i < 50; i++) {
+      particles.push({
+        x,
+        y,
+        angle: Math.random() * 2 * Math.PI,
+        speed: Math.random() * 4 + 1,
+        radius: 2,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        alpha: 1
       });
     }
+    return particles;
+  }
 
-    const messages = [
-      "Surprise~~","無論是甜品還是這個","都是我一次弄哦","別嫌棄吖","不好吃也得吃!!","嘻嘻","希望你喜歡 💖","如果有一天過得不如意了","回來這裡看看唄","噢~對了","生日快樂 ✨"
-    ];
-    const gift = document.getElementById('giftBox'), hintEl = document.getElementById('hint'), msgBox = document.getElementById('messageBox'), music = document.getElementById('bgMusic');
-    gift.addEventListener('click', async () => {
-      bg.innerHTML = '';
-      canvas.style.display = 'block';
-      animateFW();
-      gift.style.display = 'none'; hintEl.style.display = 'none';
-      music.play().catch(() => {});
-      msgBox.style.display = 'block';
-      while (true) {
-        for (const txt of messages) {
-          msgBox.classList.toggle('zoom', txt.includes('生日快樂'));
-          msgBox.textContent = '';
-          for (let i = 1; i <= txt.length; i++) {
-            msgBox.textContent = txt.slice(0, i);
-            await new Promise(r => setTimeout(r, 100));
-          }
-          await new Promise(r => setTimeout(r, 2000));
-          msgBox.style.opacity = '0';
-          await new Promise(r => setTimeout(r, 500));
-          msgBox.style.opacity = '1';
-        }
-      }
+  function drawFireworks() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    fireworks.forEach((particles, index) => {
+      particles.forEach(p => {
+        p.x += Math.cos(p.angle) * p.speed;
+        p.y += Math.sin(p.angle) * p.speed;
+        p.alpha -= 0.01;
+        ctx.fillStyle = `rgba(${hexToRgb(p.color)}, ${p.alpha})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      fireworks[index] = particles.filter(p => p.alpha > 0);
     });
-  </script>
+    requestAnimationFrame(drawFireworks);
+  }
+
+  function hexToRgb(hex) {
+    const bigint = parseInt(hex.replace('#', ''), 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    return `${r},${g},${b}`;
+  }
+
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+</script>
 </body>
 </html>
