@@ -24,7 +24,7 @@
     .message {  color: #fff;font-size:1.8rem; white-space:nowrap; opacity:0; animation:float 4s ease-in-out, glow 2s ease-in-out infinite alternate; }
     @keyframes float {0%{transform:translateY(10px);opacity:0;}10%,90%{opacity:1;}100%{transform:translateY(-10px);opacity:0;}}
     @keyframes glow {from{text-shadow:0 0 5px #fff,0 0 10px #ff69b4;}to{text-shadow:0 0 30px #ff66cc,0 0 40px #ffccff;}}
-    .final {  color: #fff;font-size:2.2rem; font-weight:bold; animation:finalZoom 3s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate; }
+    .final {  color: #fff;font-size:2.2rem; font-weight:bold; animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate; }
     @keyframes finalZoom {from{transform:scale(1);}to{transform:scale(1.5);} }
   </style>
 </head>
@@ -52,7 +52,7 @@
     // 互動文字
     const msgs=["SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃De話","嘻嘻😝","統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"];
     const gift=document.getElementById('giftBox'),hint=document.getElementById('hint'),msgC=document.getElementById('messageContainer'),music=document.getElementById('bgMusic');
-    gift.addEventListener('click',async()=>{document.getElementById('background').innerHTML='';canvas.style.display='block';animateFW();gift.style.display='none';hint.style.display='none';music.play().catch(()=>{});while(1){for(let i=0;i<msgs.length;i++){msgC.innerHTML='';let div=document.createElement('div');div.className=i===msgs.length-1?'final':'message';msgC.appendChild(div);for(let j=1;j<=msgs[i].length;j++){div.textContent=msgs[i].slice(0,j);await new Promise(r=>setTimeout(r,80));}await new Promise(r=>setTimeout(r,1000));div.style.opacity='0';await new Promise(r=>setTimeout(r,500));div.style.opacity='1';}}});
+    gift.addEventListener('click',async()=>{document.getElementById('background').innerHTML='';canvas.style.display='block';animateFW();gift.style.display='none';hint.style.display='none';music.play().catch(()=>{});while(1){for(let i=0;i<msgs.length;i++){msgC.innerHTML='';let div=document.createElement('div');div.className=i===msgs.length-1?'final':'message';msgC.appendChild(div);for(let j=1;j<=msgs[i].length;j++){div.textContent=msgs[i].slice(0,j);await new Promise(r=>setTimeout(r,100));}await new Promise(r=>setTimeout(r,1000));div.style.opacity='0';await new Promise(r=>setTimeout(r,400));div.style.opacity='1';}}});
   </script>
 </body>
 </html>
