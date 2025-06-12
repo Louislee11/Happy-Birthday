@@ -48,7 +48,7 @@
     // 星星與流星
     const bg = document.getElementById('background');
     for(let i=0;i<100;i++){const s=document.createElement('div');s.className='star';s.style.top=Math.random()*100+'vh';s.style.left=Math.random()*100+'vw';s.style.animationDelay=Math.random()*3+'s';bg.appendChild(s);}    
-    for(let i=0;i<7;i++){const m=document.createElement('div');m.className='meteor';if(Math.random()<0.5){m.style.left='-20%';m.style.top=Math.random()*100+'vh';}else{m.style.top='-20%';m.style.left=Math.random()*100+'vw';}m.style.animationDelay=Math.random()*2+'s';bg.appendChild(m);}    
+    for(let i=0;i<22;i++){const m=document.createElement('div');m.className='meteor';if(Math.random()<0.5){m.style.left='-20%';m.style.top=Math.random()*100+'vh';}else{m.style.top='-20%';m.style.left=Math.random()*100+'vw';}m.style.animationDelay=Math.random()*2+'s';bg.appendChild(m);}    
 
     // 煙花升級
     const canvas = document.getElementById('fireworks');
