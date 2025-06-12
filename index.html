@@ -201,7 +201,7 @@
     const x = Math.random() * canvas.width;
     const y = Math.random() * canvas.height / 2;
     const particles = [];
-    const colors = ['#ff3', '#f0f', '#0ff', '#f66', '#6f6', '#ccf'];
+    const colors = `hsl(${Math.random() * 360}, 100%, 60%)`;
     for (let i = 0; i < 50; i++) {
       particles.push({
         x,
