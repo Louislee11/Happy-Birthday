@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>生日驚喜 ✨</title>
+  <title>生日快樂噢</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     html, body { width:100%; height:100%; overflow:hidden; background:#000; font-family:'Segoe UI',sans-serif; }
@@ -52,7 +52,7 @@
     // 互動文字
     const msgs=["SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃De話","嘻嘻😝","統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"];
     const gift=document.getElementById('giftBox'),hint=document.getElementById('hint'),msgC=document.getElementById('messageContainer'),music=document.getElementById('bgMusic');
-    gift.addEventListener('click',async()=>{document.getElementById('background').innerHTML='';canvas.style.display='block';animateFW();gift.style.display='none';hint.style.display='none';music.play().catch(()=>{});while(1){for(let i=0;i<msgs.length;i++){msgC.innerHTML='';let div=document.createElement('div');div.className=i===msgs.length-1?'final':'message';msgC.appendChild(div);for(let j=1;j<=msgs[i].length;j++){div.textContent=msgs[i].slice(0,j);await new Promise(r=>setTimeout(r,80));}await new Promise(r=>setTimeout(r,1000));div.style.opacity='0';await new Promise(r=>setTimeout(r,450));div.style.opacity='1';}}});
+    gift.addEventListener('click',async()=>{document.getElementById('background').innerHTML='';canvas.style.display='block';animateFW();gift.style.display='none';hint.style.display='none';music.play().catch(()=>{});while(1){for(let i=0;i<msgs.length;i++){msgC.innerHTML='';let div=document.createElement('div');div.className=i===msgs.length-1?'final':'message';msgC.appendChild(div);for(let j=1;j<=msgs[i].length;j++){div.textContent=msgs[i].slice(0,j);await new Promise(r=>setTimeout(r,80));}await new Promise(r=>setTimeout(r,1000));div.style.opacity='0';await new Promise(r=>setTimeout(r,500));div.style.opacity='1';}}});
   </script>
 </body>
 </html>
