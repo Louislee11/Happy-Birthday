@@ -125,8 +125,8 @@
     const shootingStar = document.createElement('div');
     shootingStar.className = 'shooting-star';
     const fromTop = Math.random() < 0.5;
-    shootingStar.style.top = fromTop ? `${Math.random() * 20}%` : `${80 + Math.random() * 10}%`;
-    shootingStar.style.left = fromTop ? `${Math.random() * 40}%` : `${Math.random() * 20}%`;
+    shootingStar.style.top = fromTop ? `${Math.random() * 20}%` : `${120 + Math.random() * 10}%`;
+    shootingStar.style.left = fromTop ? `${Math.random() * 40}%` : `${40 + Math.random() * 20}%`;
     shootingStar.style.animationDelay = `${Math.random() * 4}s`;
     document.body.appendChild(shootingStar);
   }
