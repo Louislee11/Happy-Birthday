@@ -1,176 +1,205 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Suprise</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>生日快樂 🎂</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body, html {
-      height: 100%;
-      font-family: 'Segoe UI', sans-serif;
+    body {
+      margin: 0;
+      padding: 0;
       background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
       overflow: hidden;
-      color: white;
+      height: 100vh;
+      font-family: "Segoe UI", sans-serif;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
     }
-    canvas {
-      position: fixed;
-      top: 0; left: 0;
-      z-index: -1;
-    }
-    .center-box {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-    }
+
     .gift-box {
       cursor: pointer;
-      animation: pulse 2s infinite;
-      width: 200px;
-      height: auto;
+      transition: transform 0.3s ease;
     }
-    @keyframes pulse {
-      0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.1); opacity: 0.8; }
-      100% { transform: scale(1); opacity: 1; }
+
+    .gift-box:hover {
+      transform: scale(1.05);
     }
+
     .hint {
-      margin-top: 20px;
       font-size: 1.2rem;
-      animation: float 3s ease-in-out infinite;
-      color: #fff7c2;
-      text-shadow: 0 0 10px #ff9, 0 0 20px #ff6;
+      margin-top: 1rem;
+      animation: blink 1s infinite;
     }
-    @keyframes float {
-      0% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
-      100% { transform: translateY(0px); }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
     }
+
     .message-box {
       display: none;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       text-align: center;
-      font-size: 1.5rem;
-      animation: fadein 1s ease-in-out;
+      max-width: 90%;
+      line-height: 2;
+      animation: fadeIn 1s ease;
     }
-    .message {
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .typing-text {
+      font-size: 1.6rem;
+      margin: 1rem 0;
+      text-shadow: 0 0 5px #fff;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 2s infinite ease-in-out;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    .shooting-star {
+      position: absolute;
+      width: 80px;
+      height: 2px;
+      background: linear-gradient(-45deg, white, rgba(255, 255, 255, 0));
       opacity: 0;
-      font-weight: bold;
-      text-shadow: 0 0 15px #fff;
-      animation: flicker 3s infinite;
+      transform: rotate(45deg);
+      animation: shoot 8s infinite;
     }
-    @keyframes flicker {
-      0% { opacity: 0; transform: translateY(10px); }
-      50% { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(-10px); }
-    }
-    @keyframes fadein {
-      from { opacity: 0; }
-      to { opacity: 1; }
+
+    @keyframes shoot {
+      0% {
+        top: -10%;
+        left: 100%;
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      50% {
+        top: 50%;
+        left: -20%;
+        opacity: 0;
+      }
+      100% {
+        opacity: 0;
+      }
     }
   </style>
 </head>
 <body>
-  <canvas id="stars"></canvas>
-  <div class="center-box" id="initial">
-    <img src="gift.gif" alt="Gift" class="gift-box" onclick="revealMessage()" />
-    <div class="hint">點我🎁 記得開聲音哦</div>
+  <!-- 禮物盒 & 提示 -->
+  <div id="gift-container">
+    <img src="gift.gif" class="gift-box" id="giftBox" width="180" alt="點我打開🎁" />
+    <div class="hint">點我 🎁</div>
   </div>
 
-  <div class="center-box message-box" id="messageBox">
-    <div id="message" class="message"></div>
-    <audio id="bgm" autoplay loop>
-      <source src="birthday-song.mp3" type="audio/mpeg">
-      Your browser does not support the audio element.
-    </audio>
+  <!-- 播放音樂 -->
+  <audio id="bgm" loop>
+    <source src="birthday-song.mp3" type="audio/mpeg" />
+    您的瀏覽器不支援音樂播放
+  </audio>
+
+  <!-- 祝福文字 -->
+  <div id="messageBox" class="message-box">
+    <div class="typing-text" id="textDisplay"></div>
   </div>
 
   <script>
-    // 星星背景
-    const canvas = document.getElementById('stars');
-    const ctx = canvas.getContext('2d');
-    let stars = [];
-
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+    // 星空與流星
+    for (let i = 0; i < 150; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.top = `${Math.random() * 100}vh`;
+      star.style.left = `${Math.random() * 100}vw`;
+      star.style.animationDelay = `${Math.random() * 5}s`;
+      document.body.appendChild(star);
     }
 
-    function createStars() {
-      stars = [];
-      for (let i = 0; i < 150; i++) {
-        stars.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          size: Math.random() * 2,
-          speed: Math.random() * 0.5 + 0.2
-        });
-      }
+    for (let i = 0; i < 5; i++) {
+      const meteor = document.createElement('div');
+      meteor.className = 'shooting-star';
+      meteor.style.top = `${Math.random() * 80}vh`;
+      meteor.style.left = `${Math.random() * 100}vw`;
+      meteor.style.animationDelay = `${Math.random() * 10}s`;
+      document.body.appendChild(meteor);
     }
 
-    function drawStars() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#ffffff';
-      for (let star of stars) {
-        ctx.beginPath();
-        ctx.arc(star.x, star.y, star.size, 0, 2 * Math.PI);
-        ctx.fill();
-        star.y += star.speed;
-        if (star.y > canvas.height) {
-          star.y = 0;
-          star.x = Math.random() * canvas.width;
-        }
-      }
-      requestAnimationFrame(drawStars);
-    }
-
-    window.addEventListener('resize', () => {
-      resizeCanvas();
-      createStars();
-    });
-
-    resizeCanvas();
-    createStars();
-    drawStars();
-
-    // 點擊禮物後出現文字動畫
+    // 祝福文字陣列
     const messages = [
-      "Surprise~~ 希望你喜歡 💖",
+      "Surprise~~",
       "無論是甜品還是這個",
       "都是我一次弄哦",
       "別嫌棄吖",
+      "不好吃也得吃!!",
+      "嘻嘻",
+      "希望你喜歡 💖",
       "如果有一天過得不如意了",
       "回來這裡看看唄",
       "噢~對了",
-      "生日快樂 ✨”
+      "生日快樂 ✨"
     ];
 
-    let currentMsg = 0;
+    const giftBox = document.getElementById("giftBox");
+    const messageBox = document.getElementById("messageBox");
+    const textDisplay = document.getElementById("textDisplay");
+    const bgm = document.getElementById("bgm");
+    const giftContainer = document.getElementById("gift-container");
 
-    function revealMessage() {
-      document.getElementById('initial').style.display = 'none';
-      const box = document.getElementById('messageBox');
-      const msg = document.getElementById('message');
-      box.style.display = 'flex';
+    giftBox.addEventListener("click", () => {
+      giftContainer.style.display = "none";
+      messageBox.style.display = "flex";
 
+      // 音樂播放
+      bgm.play().catch(() => {
+        console.log("自動播放失敗，需手動觸發音樂");
+      });
+
+      // 打字動畫
+      let index = 0;
       function showMessage() {
-        msg.style.opacity = 0;
-        msg.innerText = messages[currentMsg];
-        msg.style.animation = 'none';
-        void msg.offsetWidth; // reset animation
-        msg.style.animation = 'flicker 5s ease-in-out';
-        currentMsg = (currentMsg + 1) % messages.length;
+        let current = messages[index];
+        textDisplay.textContent = "";
+        let charIndex = 0;
+
+        const typeInterval = setInterval(() => {
+          if (charIndex < current.length) {
+            textDisplay.textContent += current[charIndex++];
+          } else {
+            clearInterval(typeInterval);
+            setTimeout(() => {
+              index = (index + 1) % messages.length;
+              showMessage();
+            }, 1800); // 每句顯示停留時間
+          }
+        }, 100); // 打字速度
       }
 
       showMessage();
-      setInterval(showMessage, 5000);
-
-      document.getElementById('bgm').play();
-    }
+    });
   </script>
 </body>
 </html>
