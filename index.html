@@ -101,7 +101,7 @@
       }
       50% {
         top: 60%;
-        left: 1100%;
+        left: 100%;
         opacity: 0;
       }
       100% {
@@ -114,7 +114,7 @@
   <!-- 禮物盒 & 提示 -->
   <div id="gift-container">
     <img src="gift.gif" class="gift-box" id="giftBox" width="180" alt="點我打開🎁" />
-    <div class="hint">點我 🎁</div>
+    <div class="hint">點🎁開聲音吖</div>
   </div>
 
   <!-- 播放音樂 -->
@@ -192,7 +192,7 @@
             setTimeout(() => {
               index = (index + 1) % messages.length;
               showMessage();
-            }, 1800); // 每句顯示停留時間
+            }, 1300); // 每句顯示停留時間
           }
         }, 100); // 打字速度
       }
