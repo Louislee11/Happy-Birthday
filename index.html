@@ -1,142 +1,136 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>生日快樂 ✨</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>生日驚喜卡</title>
   <style>
-    body {
+    * {
       margin: 0;
-      background: radial-gradient(ellipse at center, #0a0a23, #000);
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      height: 100vh;
+      background: linear-gradient(to bottom, #000428, #004e92);
       overflow: hidden;
-      font-family: "Segoe UI", sans-serif;
-      color: white;
-      text-align: center;
-    }
-
-    .gift-box {
-      width: 120px;
-      height: 120px;
-      margin: 150px auto;
-      background: linear-gradient(135deg, #ff6ec4, #7873f5);
       position: relative;
-      border-radius: 15px;
-      animation: glow 1s infinite alternate;
-      cursor: pointer;
-      box-shadow: 0 0 20px #fff;
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
     }
-
-    .gift-box::before,
-    .gift-box::after {
-      content: "";
+    .stars {
       position: absolute;
-      background: white;
-    }
-
-    .gift-box::before {
       width: 100%;
-      height: 20px;
-      top: 50%;
-      left: 0;
-      transform: translateY(-50%);
-    }
-
-    .gift-box::after {
       height: 100%;
-      width: 20px;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
+      overflow: hidden;
     }
-
-    @keyframes glow {
-      0% { box-shadow: 0 0 10px #fff; }
-      100% { box-shadow: 0 0 30px #fff; }
-    }
-
-    .message {
-      font-size: 1.8rem;
-      opacity: 0;
-      transition: opacity 1s ease-in-out;
-      position: absolute;
-      top: 40%;
-      width: 100%;
-    }
-
     .star {
       position: absolute;
       width: 2px;
       height: 2px;
       background: white;
-      animation: fall 5s linear infinite;
+      animation: fall linear infinite;
     }
-
     @keyframes fall {
-      0% {
-        transform: translateY(0);
-        opacity: 1;
-      }
-      100% {
+      to {
         transform: translateY(100vh);
         opacity: 0;
       }
     }
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      text-align: center;
+    }
+    .gift-box {
+      width: 200px;
+      height: 200px;
+      background-image: url('https://lottie.host/embed/93bb7002-761e-47b6-8915-6f479d9ce6e6/1qO9yOBQXG.json');
+      background-size: cover;
+      cursor: pointer;
+      animation: pulse 2s infinite;
+    }
+    .hint {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      animation: blink 1.2s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    .message {
+      font-size: 1.5rem;
+      opacity: 0;
+      transition: opacity 1s;
+      padding: 0 20px;
+    }
+    .show {
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
-  <div id="gift" class="gift-box"></div>
-
-  <div id="messages-container" style="display:none;">
-    <div class="message">生日快樂 ✨</div>
-    <div class="message">希望你今天被溫柔以待</div>
-    <div class="message">未來如星光般閃亮</div>
-    <div class="message">Suprise~~ 希望你喜歡</div>
+  <div class="stars"></div>
+  <div class="container">
+    <div class="gift-box" id="giftBox"></div>
+    <div class="hint" id="hint">點我開禮物 🎁</div>
+    <div class="message" id="message"></div>
   </div>
 
-  <audio id="bg-music" loop>
+  <audio id="bgm" loop>
     <source src="birthday-song.mp3" type="audio/mpeg">
-    Your browser does not support the audio element.
   </audio>
 
   <script>
-    // 星星動畫
-    for (let i = 0; i < 100; i++) {
-      const star = document.createElement('div');
-      star.className = 'star';
-      star.style.top = `${Math.random() * 100}vh`;
-      star.style.left = `${Math.random() * 100}vw`;
-      star.style.animationDelay = `${Math.random() * 5}s`;
-      star.style.opacity = Math.random();
-      document.body.appendChild(star);
+    const giftBox = document.getElementById('giftBox');
+    const hint = document.getElementById('hint');
+    const message = document.getElementById('message');
+    const bgm = document.getElementById('bgm');
+
+    const texts = [
+      '生日快樂 ✨',
+      '希望你今天被溫柔以待',
+      '未來如星光般閃亮 ✨',
+      'Suprise~~ 希望你喜歡 🎁'
+    ];
+
+    let current = 0;
+
+    function showText() {
+      message.classList.remove('show');
+      setTimeout(() => {
+        message.textContent = texts[current];
+        message.classList.add('show');
+        current = (current + 1) % texts.length;
+      }, 500);
     }
 
-    const gift = document.getElementById('gift');
-    const messagesContainer = document.getElementById('messages-container');
-    const messages = document.querySelectorAll('.message');
-    const music = document.getElementById('bg-music');
-
-    let intervalId;
-
-    gift.addEventListener('click', () => {
-      gift.style.display = 'none';
-      messagesContainer.style.display = 'block';
-      music.play();
-
-      let index = 0;
-
-      const showMessage = () => {
-        messages.forEach(msg => msg.style.opacity = 0);
-        messages[index].style.opacity = 1;
-
-        setTimeout(() => {
-          messages[index].style.opacity = 0;
-          index = (index + 1) % messages.length;
-        }, 2000);
-      };
-
-      showMessage();
-      intervalId = setInterval(showMessage, 3000); // 每 4 秒下一句，總循環約 30 秒
+    giftBox.addEventListener('click', () => {
+      giftBox.style.display = 'none';
+      hint.style.display = 'none';
+      showText();
+      bgm.play();
+      setInterval(showText, 4000);
     });
+
+    // create stars
+    for (let i = 0; i < 80; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.left = `${Math.random() * 100}%`;
+      star.style.top = `${Math.random() * 100}%`;
+      star.style.animationDuration = `${2 + Math.random() * 3}s`;
+      document.querySelector('.stars').appendChild(star);
+    }
   </script>
 </body>
 </html>
