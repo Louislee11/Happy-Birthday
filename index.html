@@ -108,6 +108,24 @@
         opacity: 0;
       }
     }
+.firework {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: white;
+  border-radius: 50%;
+  animation: explode 800ms ease-out forwards;
+}
+@keyframes explode {
+  0% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--x), var(--y));
+    opacity: 0;
+  }
+}
   </style>
 </head>
 <body>
@@ -196,6 +214,29 @@
           }
         }, 100); // 打字速度
       }
+function triggerFireworks(x = window.innerWidth / 2, y = window.innerHeight / 2) {
+  for (let i = 0; i < 30; i++) {
+    const firework = document.createElement("div");
+    firework.className = "firework";
+    firework.style.left = `${x}px`;
+    firework.style.top = `${y}px`;
+
+    // 隨機方向
+    const angle = Math.random() * 2 * Math.PI;
+    const radius = Math.random() * 120;
+    const dx = Math.cos(angle) * radius;
+    const dy = Math.sin(angle) * radius;
+
+    firework.style.setProperty("--x", `${dx}px`);
+    firework.style.setProperty("--y", `${dy}px`);
+
+    document.body.appendChild(firework);
+
+    setTimeout(() => {
+      firework.remove();
+    }, 1000);
+  }
+}
 
       showMessage();
     });
