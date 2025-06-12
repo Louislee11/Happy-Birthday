@@ -52,7 +52,7 @@
     // 互動文字
     const msgs=["SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃De話","嘻嘻😝","統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"];
     const gift=document.getElementById('giftBox'),hint=document.getElementById('hint'),msgC=document.getElementById('messageContainer'),music=document.getElementById('bgMusic');
-    gift.addEventListener('click',async()=>{document.getElementById('background').innerHTML='';canvas.style.display='block';animateFW();gift.style.display='none';hint.style.display='none';music.play().catch(()=>{});while(1){for(let i=0;i<msgs.length;i++){msgC.innerHTML='';let div=document.createElement('div');div.className=i===msgs.length-1?'final':'message';msgC.appendChild(div);for(let j=1;j<=msgs[i].length;j++){div.textContent=msgs[i].slice(0,j);await new Promise(r=>setTimeout(r,100));}await new Promise(r=>setTimeout(r,1000));div.style.opacity='0';await new Promise(r=>setTimeout(r,350));div.style.opacity='1';}}});
+    gift.addEventListener('click',async()=>{document.getElementById('background').innerHTML='';canvas.style.display='block';animateFW();gift.style.display='none';hint.style.display='none';music.play().catch(()=>{});while(1){for(let i=0;i<msgs.length;i++){msgC.innerHTML='';let div=document.createElement('div');div.className=i===msgs.length-1?'final':'message';msgC.appendChild(div);for(let j=1;j<=msgs[i].length;j++){div.textContent=msgs[i].slice(0,j);await new Promise(r=>setTimeout(r,100));}await new Promise(r=>setTimeout(r,1000));div.style.opacity='0';await new Promise(r=>setTimeout(r,300));div.style.opacity='1';}}});
   </script>
 </body>
 </html>
