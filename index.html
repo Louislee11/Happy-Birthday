@@ -23,7 +23,7 @@
     #messageContainer { margin-top:20px; display:flex; flex-direction:column; align-items:center; }
     .message {  color: #fff;font-size:1.8rem; white-space:nowrap; opacity:0; animation:float 4s ease-in-out, glow 2s ease-in-out infinite alternate; }
     @keyframes float {0%{transform:translateY(10px);opacity:0;}10%,90%{opacity:1;}100%{transform:translateY(-10px);opacity:0;}}
-    @keyframes glow {from{text-shadow:0 0 5px #fff,0 0 10px #ff69b4;}to{text-shadow:0 0 30px #ff66cc,0 0 30px #ffccff;}}
+    @keyframes glow {from{text-shadow:0 0 5px #fff,0 0 10px #ff69b4;}to{text-shadow:0 0 30px #ff66cc,0 0 40px #ffccff;}}
     .final {  color: #fff;font-size:2.2rem; font-weight:bold; animation:finalZoom 2s ease-in-out infinite alternate, glow 2s ease-in-out infinite alternate; }
     @keyframes finalZoom {from{transform:scale(1);}to{transform:scale(1.5);} }
   </style>
@@ -44,7 +44,7 @@
     const bg = document.getElementById('background');
     for(let i=0;i<100;i++){const s=document.createElement('div');s.className='star';s.style.top=Math.random()*100+'vh';s.style.left=Math.random()*100+'vw';s.style.animationDelay=Math.random()*3+'s';bg.appendChild(s);}    
     // 流星
-    for(let i=0;i<7;i++){const m=document.createElement('div');m.className='meteor';if(Math.random()<0.5){m.style.left='-20%';m.style.top=Math.random()*100+'vh';}else{m.style.top='-20%';m.style.left=Math.random()*100+'vw';}m.style.animationDelay=Math.random()*1+'s';bg.appendChild(m);}    
+    for(let i=0;i<7;i++){const m=document.createElement('div');m.className='meteor';if(Math.random()<0.5){m.style.left='-20%';m.style.top=Math.random()*100+'vh';}else{m.style.top='-20%';m.style.left=Math.random()*100+'vw';}m.style.animationDelay=Math.random()+'s';bg.appendChild(m);}    
     // 煙花
     const canvas=document.getElementById('fireworks'),ctx=canvas.getContext('2d');canvas.width=window.innerWidth;canvas.height=window.innerHeight;
     class Firework{constructor(){this.p=[];this.h=Math.random()*360;const x=Math.random()*canvas.width,y=Math.random()*canvas.height/2;for(let i=0;i<30;i++){const a=Math.random()*2*Math.PI,v=Math.random()*3+2;this.p.push({x,y,dx:Math.cos(a)*v,dy:Math.sin(a)*v,a:1});}}}
