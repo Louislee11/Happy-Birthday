@@ -56,11 +56,15 @@
       const m = document.createElement('div');
       m.className = 'meteor';
       // 隨機起始點在邊緣
-      if (Math.random() < 0.5) {
+      if (Math.random() < 0.3) {
         m.style.top = Math.random() * 100 + '%';
         m.style.left = '-20%';
-      } else {
-        m.style.top = '20%';
+      } elseif (Math.random() < 0.6) {
+        m.style.top = '50%';
+        m.style.left = Math.random() * 100 + '%';
+      }
+      }else {
+        m.style.top = '100%';
         m.style.left = Math.random() * 100 + '%';
       }
       m.style.animationDelay = Math.random() * 5 + 's';
