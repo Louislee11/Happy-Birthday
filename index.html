@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>生日驚喜</title>
+  <title>Suprise</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body, html {
@@ -78,7 +78,7 @@
   <canvas id="stars"></canvas>
   <div class="center-box" id="initial">
     <img src="gift.gif" alt="Gift" class="gift-box" onclick="revealMessage()" />
-    <div class="hint">點我開禮物 🎁</div>
+    <div class="hint">點我🎁 記得開聲音哦</div>
   </div>
 
   <div class="center-box message-box" id="messageBox">
@@ -139,10 +139,14 @@
 
     // 點擊禮物後出現文字動畫
     const messages = [
-      "生日快樂 ✨",
-      "希望你今天被溫柔以待",
-      "未來如星光般閃亮",
-      "Surprise~~ 希望你喜歡 💖"
+      "Surprise~~ 希望你喜歡 💖",
+      "無論是甜品還是這個",
+      "都是我一次弄哦",
+      "別嫌棄吖",
+      "如果有一天過得不如意了",
+      "回來這裡看看唄",
+      "噢~對了",
+      "生日快樂 ✨”
     ];
 
     let currentMsg = 0;
