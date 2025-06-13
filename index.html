@@ -1,158 +1,180 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>生日快樂噢</title>
+  <title>Happy Birthday</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-    html, body {
-      width: 100%;
+
+    body, html {
       height: 100%;
       overflow: hidden;
-      font-family: 'Segoe UI', sans-serif;
-      background: #000;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: black;
     }
 
-    /* 背景影片 */
-    #video-bg {
+    #bg-video {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
       object-fit: cover;
-      z-index: 0;
-      filter: blur(5px) brightness(0.6);
+      z-index: -3;
+      filter: brightness(0.4) blur(6px);
     }
 
-    /* 玻璃面板容器 */
-    .container {
+    .stars, .twinkling, .meteors {
       position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+    }
+
+    .stars {
+      background: url('https://raw.githubusercontent.com/VincentGarreau/particles.js/master/demo/media/stars.png') repeat;
+      animation: moveStars 100s linear infinite;
+    }
+
+    .twinkling {
+      background: url('https://raw.githubusercontent.com/VincentGarreau/particles.js/master/demo/media/twinkling.png') repeat;
+      animation: moveTwinkling 200s linear infinite;
+    }
+
+    .meteors {
+      background: url('https://raw.githubusercontent.com/VincentGarreau/particles.js/master/demo/media/meteors.png') repeat;
+      animation: moveMeteors 300s linear infinite;
+    }
+
+    @keyframes moveStars {
+      from {background-position: 0 0;}
+      to {background-position: -10000px 5000px;}
+    }
+
+    @keyframes moveTwinkling {
+      from {background-position: 0 0;}
+      to {background-position: 10000px 0;}
+    }
+
+    @keyframes moveMeteors {
+      from {background-position: 0 0;}
+      to {background-position: -10000px -10000px;}
+    }
+
+    .center {
+      position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 2;
-      backdrop-filter: blur(10px) saturate(120%);
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      padding: 20px 30px;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+      text-align: center;
     }
 
-    #giftBox {
+    .gift {
       cursor: pointer;
-    }
-    #giftBox img {
-      width: 160px;
-    }
-    #hint {
-      margin-top: 8px;
-      font-size: 1.2rem;
-      color: #ffeb3b;
-      animation: blink 1.5s infinite;
-    }
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
+      animation: float 2s ease-in-out infinite;
     }
 
-    /* 文字動畫區域 */
-    #messageContainer {
-      margin-top: 30px;
-      display: none;
-      flex-direction: column;
-      align-items: center;
+    @keyframes float {
+      0%, 100% { transform: translate(-50%, -52%); }
+      50% { transform: translate(-50%, -56%); }
     }
-    .message {
-      font-size: 1.8rem;
-      color: #fff;
-      margin-bottom: 16px;
+
+    #text-container {
+      margin-top: 20px;
+      color: white;
+      font-size: 2rem;
+      text-shadow: 0 0 10px rgba(255,255,255,0.6);
+      perspective: 1000px;
+    }
+
+    .text-line {
       opacity: 0;
-      transform: translateY(20px) scale(0.95);
-      animation: floatText 4s ease-in-out forwards;
-      text-shadow: 0 0 10px #ff66cc;
+      transform: rotateX(90deg);
+      animation: showText 1s ease forwards;
     }
-    @keyframes floatText {
-      0% { opacity: 0; transform: translateY(20px) scale(0.95); }
-      10% { opacity: 1; transform: translateY(0) scale(1); }
-      90% { opacity: 1; transform: translateY(0) scale(1); }
-      100% { opacity: 0; transform: translateY(-20px) scale(0.95); }
+
+    @keyframes showText {
+      to {
+        opacity: 1;
+        transform: rotateX(0deg);
+      }
     }
-    .final {
-      font-size: 2.5rem;
+
+    .final-text {
+      font-size: 3.5rem;
       font-weight: bold;
-      background: linear-gradient(90deg, #ff66cc, #66ccff, #ffff66);
+      background: linear-gradient(90deg, #ff4d4d, #ffd700, #00ffcc);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 20px #fff;
-      animation: pulse 2s infinite;
+      animation: glow 1s ease-in-out infinite alternate;
     }
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-      100% { transform: scale(1); }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #fff; }
+      to { text-shadow: 0 0 30px #ff00ff; }
     }
   </style>
 </head>
 <body>
-  <video id="video-bg" autoplay muted loop>
-    <source src="video.mp4" type="video/mp4" />
-  </video>
+  <video id="bg-video" src="video.mp4" autoplay muted loop></video>
+  <div class="stars"></div>
+  <div class="twinkling"></div>
+  <div class="meteors"></div>
 
-  <div class="container">
-    <div id="giftBox">
-      <img src="gift.gif" alt="禮物盒">
-      <div id="hint">點 🎁 開聲音開聲音!!</div>
+  <div class="center">
+    <div id="gift-container">
+      <p style="color:white;font-size:1.2rem;margin-bottom:10px">點 🎁 開聲音開聲音!!</p>
+      <img class="gift" src="gift.gif" width="150" onclick="startSequence()" />
     </div>
-    <div id="messageContainer"></div>
-    <audio id="bgMusic" src="birthday-song.mp3" loop></audio>
+
+    <div id="text-container"></div>
   </div>
 
-  <script>
-    const gift = document.getElementById('giftBox');
-    const hint = document.getElementById('hint');
-    const messageContainer = document.getElementById('messageContainer');
-    const music = document.getElementById('bgMusic');
-    const video = document.getElementById('video-bg');
+  <audio id="music" src="birthday-song.mp3"></audio>
 
-    const msgs = [
-      "SURPRISE 🥳",
-      "第一次弄的哦☺️",
-      "甜品還是...這個",
-      "不好吃De話",
-      "嘻嘻😝",
-      "統統給我吃下去!!",
-      "得空常回來看看唄",
-      "希望你喜歡 💖",
-      "噢~對了",
-      "生日快樂 ✨"
+  <script>
+    const lines = [
+      "Surprise 🥳",
+      "希望你今天被溫柔以待",
+      "未來如星光般閃亮",
+      "這是我親手做的小甜點 🍰",
+      "不好吃De話…",
+      "你就當作",
+      "吃進了一點點我對你的祝福 ✨",
+      "生日快樂 🎉"
     ];
 
-    gift.addEventListener('click', async () => {
-      gift.style.display = 'none';
-      hint.style.display = 'none';
-      messageContainer.style.display = 'flex';
-      music.play().catch(() => {});
+    function startSequence() {
+      document.getElementById("music").play();
+      document.getElementById("gift-container").style.display = "none";
+      const container = document.getElementById("text-container");
+      const video = document.getElementById("bg-video");
 
-      for (let i = 0; i < msgs.length; i++) {
-        messageContainer.innerHTML = '';
-        const div = document.createElement('div');
-        div.className = i === msgs.length - 1 ? 'final' : 'message';
-        div.textContent = msgs[i];
-        messageContainer.appendChild(div);
+      let delay = 0;
 
-        if (i === msgs.length - 1) video.pause(); // 最後一段暫停影片
-        await new Promise(r => setTimeout(r, 4000));
-      }
-    });
+      lines.forEach((line, index) => {
+        const div = document.createElement("div");
+        div.classList.add("text-line");
+
+        if (index === lines.length - 1) {
+          div.classList.add("final-text");
+          setTimeout(() => video.pause(), delay + 500);
+        }
+
+        div.style.animationDelay = `${delay}ms`;
+        div.textContent = line;
+        container.appendChild(div);
+
+        delay += 2500;
+      });
+    }
   </script>
 </body>
 </html>
