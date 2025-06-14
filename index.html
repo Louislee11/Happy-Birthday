@@ -15,16 +15,16 @@
     @keyframes shoot { 0%{opacity:1;}100%{opacity:0; transform:translate(500px,500px) rotate(45deg);} }
 
     .special-meteor {
-      background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 80%);
+      background: radial-gradient(circle, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 80%);
       width: 20px; height: 20px; border-radius: 50%;
       position: absolute;
-      box-shadow: 0 0 4px rgba(255,255,255,0.3);
+      box-shadow: 0 0 5px rgba(255,255,255,0.3);
       animation: sparkle 6s ease-in-out infinite;
       pointer-events:auto; cursor:pointer;
     }
     @keyframes sparkle {
-      0%,100%{ transform: scale(1); opacity: 0.1; }
-      50%{ transform: scale(1.3); opacity: 0.3; }
+      0%,100%{ transform: scale(1); opacity: 0.15; }
+      50%{ transform: scale(1.2); opacity: 0.4; }
     }
 
     #secretScreen {
@@ -33,8 +33,8 @@
       justify-content: center; align-items: center; flex-direction: column;
     }
     #secretVideo {
-      max-width: 90%;
-      max-height: 90%;
+      max-width: 100%;
+      max-height: 100%;
       border: 4px solid #fff;
       border-radius: 10px;
     }
@@ -47,19 +47,22 @@
     @keyframes blink {0%,100%{opacity:1;}50%{opacity:0.3;}}
 
     #messageContainer { margin-top:20px; display:flex; flex-direction:column; align-items:center; }
-    .message {  color: #fff;font-size:1.8rem; white-space:nowrap; opacity:0; animation:float 4s ease-in-out, glow 2s ease-in-out infinite alternate; }
+    .message { color: #fff; font-size:1.8rem; white-space:nowrap; opacity:0; animation:float 4s ease-in-out, glow 2s ease-in-out infinite alternate; }
     @keyframes float {0%{transform:translateY(10px);opacity:0;}10%,90%{opacity:1;}100%{transform:translateY(-10px);opacity:0;}}
     @keyframes glow {from{text-shadow:0 0 5px #fff,0 0 10px #ff69b4;}to{text-shadow:0 0 30px #ff66cc,0 0 40px #ffccff;}}
 
-    .final {  color: #fff;font-size:2.2rem; font-weight:bold; animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate; }
+    .final { color: #fff; font-size:2.2rem; font-weight:bold; animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate; }
     @keyframes finalZoom {from{transform:scale(1);}to{transform:scale(1.5);} }
   </style>
 </head>
 <body>
   <div id="background"></div>
+
+  <!-- 隱藏影片播放畫面 -->
   <div id="secretScreen">
-    <video id="secretVideo" src="https://www.w3schools.com/html/mov_bbb.mp4" autoplay></video>
+    <video id="secretVideo" controls playsinline webkit-playsinline></video>
   </div>
+
   <canvas id="fireworks"></canvas>
   <div class="container">
     <div id="giftBox">
@@ -69,7 +72,9 @@
     <div id="messageContainer"></div>
     <audio id="bgMusic" src="birthday-song.mp3" loop></audio>
   </div>
+
   <script>
+    // 星星與流星背景
     const bg = document.getElementById('background');
     for(let i=0;i<100;i++){
       const s=document.createElement('div');
@@ -93,30 +98,31 @@
       bg.appendChild(m);
     }
 
-    // 隱藏流星並加入事件
+    // 特別隱藏流星
     const special = document.createElement('div');
     special.className = 'special-meteor';
     special.style.left = Math.random()*90 + '%';
     special.style.top = Math.random()*90 + '%';
-    special.addEventListener('click', () => {
-      document.getElementById('secretScreen').style.display = 'flex';
-      document.getElementById('secretVideo').play();
+    document.body.appendChild(special);
 
-      // 隱藏主畫面元素
+    special.addEventListener('click', () => {
+      const video = document.getElementById('secretVideo');
+      video.src = "https://www.w3schools.com/html/mov_bbb.mp4"; // 換成你自己的影片連結
+      video.load();
+      video.play();
+      document.getElementById('secretScreen').style.display = 'flex';
       document.querySelector('.container').style.display = 'none';
       document.getElementById('background').style.display = 'none';
     });
-    document.body.appendChild(special);
 
     const secretVideo = document.getElementById('secretVideo');
     secretVideo.addEventListener('ended', () => {
       document.getElementById('secretScreen').style.display = 'none';
-
-      // 回到禮物盒畫面
       document.querySelector('.container').style.display = 'flex';
       document.getElementById('background').style.display = 'block';
     });
 
+    // 煙花動畫
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
@@ -167,7 +173,6 @@
       requestAnimationFrame(animateFireworks);
       ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-
       if (Math.random() < 0.05) fireworks.push(new Firework());
       fireworks.forEach((fw, i) => {
         fw.particles.forEach(p => {
@@ -178,6 +183,7 @@
       });
     }
 
+    // 點擊禮物盒
     const msgs = [
       "SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃de話","嘻嘻嘻嘻😝",
       "統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"
