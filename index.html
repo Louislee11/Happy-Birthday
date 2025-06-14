@@ -16,18 +16,12 @@
     /* 流星（只保留多层渐变尾迹 + 尾部粒子） */
     .meteor {
       position: absolute;
-      width: 120px;
-      height: 2px;
-      background: linear-gradient(
-        to left,
-        rgba(255,255,255,1) 0%,
-        rgba(255,255,255,0.6) 20%,
-        rgba(255,255,255,0.2) 60%,
-        transparent 100%
-      );
-      transform: rotate(var(--angle));
-      filter: drop-shadow(0 0 6px rgba(255,255,255,0.8));
-      animation: shoot var(--duration) linear var(--delay) infinite;
+      width: 160px; /* 更長拖尾 */
+      height: 4px;  /* 更粗 */
+      background: linear-gradient(to left, #fff, transparent);
+      transform: rotate(45deg);
+      animation: shoot 2.5s linear infinite;
+      filter: drop-shadow(0 0 6px #fff);
     }
 
     @keyframes shoot {
@@ -95,49 +89,33 @@
     }
 
     // 流星（多層漸變 + 尾部粒子）
-    for (let i = 0; i < 30; i++) {
-      const m = document.createElement('div');
-      m.className = 'meteor';
-
-      // 隨機起點
-      const startX = Math.random() * window.innerWidth + 'px';
-      const startY = Math.random() * window.innerHeight * 0.2 - window.innerHeight * 0.1 + 'px';
-      const angleVal = 45 + (Math.random() * 60 - 30);
-      const angle = angleVal + 'deg';
-
-      // 軌跡長度
-      const length = 300 + Math.random() * 200;
-      const dx = Math.cos(angleVal * Math.PI / 180) * length + 'px';
-      const dy = Math.sin(angleVal * Math.PI / 180) * length + 'px';
-
-      // 時長與延遲
-      const duration = (1 + Math.random() * 2).toFixed(2) + 's';
-      const delay = (Math.random() * 5).toFixed(2) + 's';
-
-      // CSS 變數
-      m.style.setProperty('--start-x', startX);
-      m.style.setProperty('--start-y', startY);
-      m.style.setProperty('--angle', angle);
-      m.style.setProperty('--dx', dx);
-      m.style.setProperty('--dy', dy);
-      m.style.setProperty('--duration', duration);
-      m.style.setProperty('--delay', delay);
-
-      // 尾部粒子
-      const particleCount = 3 + Math.floor(Math.random() * 3);
-      for (let j = 0; j < particleCount; j++) {
-        const p = document.createElement('span');
-        p.className = 'MeteorParticle';
-        const size = 2 + Math.random() * 2;
-        p.style.width = size + 'px';
-        p.style.height = size + 'px';
-        p.style.top = (Math.random() * 4 - 2) + 'px';
-        p.style.left = Math.random() * 120 + 'px';
-        p.style.animationDelay = (Math.random() * 1).toFixed(2) + 's';
-        m.appendChild(p);
+    for(let i=0;i<22;i++){
+      const m=document.createElement('div');
+      m.className='meteor';
+      if(Math.random()<0.5){
+        m.style.left='-20%';
+        m.style.top=Math.random()*100+'vh';
+      }else{
+        m.style.top='-20%';
+        m.style.left=Math.random()*100+'vw';
       }
-
+      m.style.animationDelay=Math.random()*2+'s';
       bg.appendChild(m);
+    
+      // 尾跡粒子（加入小閃光）
+      const trailCount = Math.floor(Math.random() * 4) + 4; // 4~7顆
+      for (let j = 0; j < trailCount; j++) {
+        const t = document.createElement('div');
+        t.className = 'star';
+        t.style.width = '3px';
+        t.style.height = '3px';
+        t.style.top = parseFloat(m.style.top || 0) + j * 6 + 'px';
+        t.style.left = parseFloat(m.style.left || 0) + j * 6 + 'px';
+        t.style.opacity = (0.6 - j * 0.08).toFixed(2);
+        t.style.animationDelay = (Math.random() * 1.5) + 's';
+        t.style.transition = 'opacity 1s ease-out';
+        bg.appendChild(t);
+      }
     }
 
     // 煙花 Canvas & 互動文字... (其餘維持不變)
