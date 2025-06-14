@@ -8,79 +8,124 @@
     * { margin:0; padding:0; box-sizing:border-box; }
     html, body { width:100%; height:100%; overflow:hidden; background:#000; font-family:'Segoe UI',sans-serif; }
 
-    /* 背景星星 */
     #background { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
-    .star { position:absolute; width:2px; height:2px; background:#fff; border-radius:50%; animation:twinkle 2s infinite ease-in-out; }
-    @keyframes twinkle { 0%,100%{opacity:0.2;} 50%{opacity:1;} }
 
-    /* 流星整體容器 */
-    .meteor {
-      position: absolute;
-      width: 140px;
-      height: 14px;
-      pointer-events: none;
-      transform: rotate(45deg);
-      animation: shoot linear infinite;
-    }
-    @keyframes shoot {
-      0% { opacity: 1; transform: translate(0,0) rotate(45deg); }
-      100% { opacity: 0; transform: translate(600px,600px) rotate(45deg); }
-    }
-
-    /* 流星頭 */
-    .meteor .head {
-      position: absolute;
-      top: 0;
-      left: 126px; /* 緊貼尾巴末端 */
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: radial-gradient(circle at center, #fff 0%, rgba(255,182,193,0.8) 50%, transparent 80%);
-      box-shadow: 0 0 12px rgba(255,182,193,0.8), 0 0 20px rgba(255,192,203,0.6);
-    }
-
-    /* 流星尾巴 */
-    .meteor .tail {
-      position: absolute;
-      top: 5px;
-      left: 0;
-      width: 120px;
-      height: 4px;
-      background: linear-gradient(to left, rgba(255,192,203,0.8), rgba(255,182,193,0.4), transparent);
-      border-radius: 2px;
-      filter: blur(2px);
-    }
-
-    /* 尾部閃爍粒子 */
-    .meteor .sparkle {
-      position: absolute;
-      width: 4px; height: 4px;
-      background: #fff;
+    .star {
+      position:absolute;
+      width:2px;
+      height:2px;
+      background:#fff;
       border-radius:50%;
-      opacity:0.7;
-      animation: sparkle 1.2s infinite ease-in-out;
+      animation:twinkle 2s infinite ease-in-out;
     }
-    @keyframes sparkle {
-      0%,100% { opacity:0.2; transform: translateY(0); }
-      50% { opacity:1; transform: translateY(-5px); }
+    @keyframes twinkle {0%,100%{opacity:0.2;}50%{opacity:1;}}
+
+    .meteor-wrapper {
+      position:absolute;
+      width:150px;
+      height:6px;
+      pointer-events:none;
+      animation:shoot 3s linear infinite;
     }
 
-    /* 煙花 */
+    .meteor-head {
+      position:absolute;
+      width:10px;
+      height:10px;
+      background:radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,192,203,0.8) 40%, rgba(255,192,203,0) 70%);
+      border-radius:50%;
+      left:0;
+      top:-2px;
+    }
+
+    .meteor-tail {
+      position:absolute;
+      left:10px;
+      top:0;
+      width:140px;
+      height:6px;
+      background: linear-gradient(to right, rgba(255,182,193,0.8), rgba(255,105,180,0.5), rgba(147,112,219,0));
+      border-radius:3px;
+    }
+
+    .meteor-particle {
+      position:absolute;
+      width:4px;
+      height:4px;
+      background:rgba(255,192,203,0.6);
+      border-radius:50%;
+      animation:particle-blink 2s infinite ease-in-out;
+    }
+
+    @keyframes shoot {
+      0% { transform:translate(0, 0) rotate(var(--angle)); opacity:1; }
+      100% { transform:translate(600px, 600px) rotate(var(--angle)); opacity:0; }
+    }
+
+    @keyframes particle-blink {
+      0%, 100% { opacity:0.2; transform:scale(0.8); }
+      50% { opacity:1; transform:scale(1.2); }
+    }
+
     #fireworks { position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none; display:none; }
 
-    /* 互動內容 */
-    .container { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:2; display:flex; flex-direction:column; align-items:center; pointer-events:auto; }
+    .container {
+      position:fixed;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      z-index:2;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      pointer-events:auto;
+    }
+
     #giftBox { cursor:pointer; }
-    #hint { margin-top:8px; font-size:1.2rem; color:#ffeb3b; animation:blink 1.5s infinite; pointer-events:none; }
-    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+    #hint {
+      margin-top:8px;
+      font-size:1.2rem;
+      color:#ffeb3b;
+      animation:blink 1.5s infinite;
+      pointer-events:none;
+    }
 
-    #messageContainer { margin-top:20px; display:flex; flex-direction:column; align-items:center; }
-    .message { color:#fff; font-size:1.8rem; white-space:nowrap; opacity:0; animation:float 4s ease-in-out, glow 2s ease-in-out infinite alternate; }
-    @keyframes float { 0%{transform:translateY(10px);opacity:0;} 10%,90%{opacity:1;} 100%{transform:translateY(-10px);opacity:0;} }
-    @keyframes glow { from{text-shadow:0 0 5px #fff,0 0 10px #ff69b4;} to{text-shadow:0 0 30px #ff66cc,0 0 40px #ffccff;} }
-    .final { color:#fff; font-size:2.2rem; font-weight:bold; animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate; }
-    @keyframes finalZoom { from{transform:scale(1);} to{transform:scale(1.5);} }
+    @keyframes blink {0%,100%{opacity:1;}50%{opacity:0.3;}}
 
+    #messageContainer {
+      margin-top:20px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
+
+    .message {
+      color: #fff;
+      font-size:1.8rem;
+      white-space:nowrap;
+      opacity:0;
+      animation:float 4s ease-in-out, glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes float {
+      0%{transform:translateY(10px);opacity:0;}
+      10%,90%{opacity:1;}
+      100%{transform:translateY(-10px);opacity:0;}
+    }
+
+    @keyframes glow {
+      from{text-shadow:0 0 5px #fff,0 0 10px #ff69b4;}
+      to{text-shadow:0 0 30px #ff66cc,0 0 40px #ffccff;}
+    }
+
+    .final {
+      color: #fff;
+      font-size:2.2rem;
+      font-weight:bold;
+      animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes finalZoom {from{transform:scale(1);}to{transform:scale(1.5);} }
   </style>
 </head>
 <body>
@@ -96,80 +141,151 @@
   </div>
 
   <script>
-    // 背景星星
+    // 星星與粉嫩流星
     const bg = document.getElementById('background');
-    for(let i=0; i<100; i++){
-      const s = document.createElement('div');
-      s.className = 'star';
-      s.style.top = Math.random()*100 + 'vh';
-      s.style.left = Math.random()*100 + 'vw';
-      s.style.animationDelay = Math.random()*3 + 's';
+    for(let i=0;i<100;i++){
+      const s=document.createElement('div');
+      s.className='star';
+      s.style.top=Math.random()*100+'vh';
+      s.style.left=Math.random()*100+'vw';
+      s.style.animationDelay=Math.random()*3+'s';
       bg.appendChild(s);
     }
 
-    // 流星
-    function launchMeteor(){
-      const m = document.createElement('div');
-      m.className = 'meteor';
-      // 隨機起點
-      m.style.left = Math.random()*window.innerWidth*0.8 + 'px';
-      m.style.top  = Math.random()*window.innerHeight*0.5 + 'px';
-      m.style.animationDuration = (2 + Math.random()*1) + 's';
-      m.style.animationDelay = Math.random()*2 + 's';
+    const pastelColors = [
+      ['#ffc0cb','#ffb6c1','#fff0f5'],
+      ['#dda0dd','#da70d6','#eee5ff'],
+      ['#b0e0e6','#add8e6','#e0ffff'],
+      ['#ffe4e1','#ff69b4','#ffc0cb']
+    ];
 
-      // 主體
-      const tail = document.createElement('div');
-      tail.className = 'tail';
-      m.appendChild(tail);
+    for(let i=0;i<18;i++){
+      const angle = Math.random() * 60 - 30; // -30 ~ +30 deg
+      const wrapper = document.createElement('div');
+      wrapper.className = 'meteor-wrapper';
+      wrapper.style.setProperty('--angle', angle + 'deg');
+      wrapper.style.top = Math.random() * 100 + 'vh';
+      wrapper.style.left = Math.random() * 100 + 'vw';
+      wrapper.style.transform = `rotate(${angle}deg)`;
+
+      const colorSet = pastelColors[Math.floor(Math.random() * pastelColors.length)];
 
       const head = document.createElement('div');
-      head.className = 'head';
-      m.appendChild(head);
+      head.className = 'meteor-head';
+      head.style.background = `radial-gradient(circle, #fff 0%, ${colorSet[0]} 40%, transparent 70%)`;
 
-      // 粒子
-      for(let i=0;i<3;i++){
+      const tail = document.createElement('div');
+      tail.className = 'meteor-tail';
+      tail.style.background = `linear-gradient(to right, ${colorSet[0]}, ${colorSet[1]}, transparent)`;
+
+      wrapper.appendChild(head);
+      wrapper.appendChild(tail);
+
+      for (let j = 0; j < 4; j++) {
         const p = document.createElement('div');
-        p.className = 'sparkle';
-        p.style.left = (20 + Math.random()*80) + 'px';
-        p.style.top  = (Math.random()*6 + 4) + 'px';
-        p.style.animationDelay = Math.random()+'s';
-        m.appendChild(p);
+        p.className = 'meteor-particle';
+        p.style.left = (20 + j*25) + 'px';
+        p.style.top = (Math.random()*4-2) + 'px';
+        p.style.background = colorSet[2];
+        wrapper.appendChild(p);
       }
 
-      bg.appendChild(m);
-      // 清除
-      setTimeout(()=>bg.removeChild(m), 3500);
+      bg.appendChild(wrapper);
     }
-    // 定時發射
-    for(let i=0;i<15;i++){
-      setTimeout(()=> launchMeteor(), i*400);
-    }
-    setInterval(launchMeteor, 2500);
 
-    // 煙花 & 文字互動（保持原樣）
+    // 煙火
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+
     class Particle {
-      constructor(x,y,c){const a=Math.random()*2*Math.PI,s=1+Math.random()*2;this.x=x;this.y=y;this.dx=Math.cos(a)*s;this.dy=Math.sin(a)*s;this.alpha=1;this.color=c;this.size=2+Math.random()*2;}
-      update(){this.x+=this.dx;this.y+=this.dy;this.alpha-=0.015;}
-      draw(){ctx.globalAlpha=this.alpha;ctx.fillStyle=this.color;ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;}
+      constructor(x, y, color) {
+        const angle = Math.random() * 2 * Math.PI;
+        const speed = Math.random() * 2 + 1;
+        this.x = x;
+        this.y = y;
+        this.dx = Math.cos(angle) * speed;
+        this.dy = Math.sin(angle) * speed;
+        this.alpha = 1;
+        this.color = color;
+        this.size = Math.random() * 2 + 2;
+      }
+      update() {
+        this.x += this.dx;
+        this.y += this.dy;
+        this.alpha -= 0.015;
+      }
+      draw() {
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
     }
-    class Firework{constructor(){this.particles=[];const x=Math.random()*canvas.width,y=Math.random()*canvas.height*0.5,h=Math.floor(Math.random()*360);for(let i=0;i<20;i++){this.particles.push(new Particle(x,y,`hsl(${(h+Math.random()*60)%360},100%,60%)`));}}}
-    const fireworks=[];function animateFireworks(){requestAnimationFrame(animateFireworks);ctx.fillStyle='rgba(0,0,0,0.2)';ctx.fillRect(0,0,canvas.width,canvas.height);if(Math.random()<0.05)fireworks.push(new Firework());fireworks.forEach((fw,i)=>{fw.particles.forEach(p=>{p.update();p.draw();});if(fw.particles.every(p=>p.alpha<=0))fireworks.splice(i,1);} )}
-    const msgs=["SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃de話","嘻嘻嘻嘻😝","統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"];
-    const gift=document.getElementById('giftBox'),hint=document.getElementById('hint'),msgC=document.getElementById('messageContainer'),music=document.getElementById('bgMusic');
-    gift.addEventListener('click',async()=>{
-      document.getElementById('background').innerHTML='';
-      canvas.style.display='block';animateFireworks();
-      gift.style.display='none';hint.style.display='none';
-      music.play().catch(()=>{});
-      while(1){
-        for(let i=0;i<msgs.length;i++){
-          msgC.innerHTML='';let d=document.createElement('div');d.className=i===msgs.length-1?'final':'message';msgC.appendChild(d);
-          for(let j=1;j<=msgs[i].length;j++){d.textContent=msgs[i].slice(0,j);await new Promise(r=>setTimeout(r,100));}
-          await new Promise(r=>setTimeout(r,1000));d.style.opacity='0';await new Promise(r=>setTimeout(r,308));d.style.opacity='1';
+
+    class Firework {
+      constructor() {
+        this.particles = [];
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height * 0.5;
+        const baseHue = Math.floor(Math.random() * 360);
+        for (let i = 0; i < 20; i++) {
+          const color = `hsl(${(baseHue + Math.random()*60) % 360}, 100%, 60%)`;
+          this.particles.push(new Particle(x, y, color));
+        }
+      }
+    }
+
+    const fireworks = [];
+    function animateFireworks() {
+      requestAnimationFrame(animateFireworks);
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      if (Math.random() < 0.05) fireworks.push(new Firework());
+      fireworks.forEach((fw, i) => {
+        fw.particles.forEach(p => {
+          p.update();
+          p.draw();
+        });
+        if (fw.particles.every(p => p.alpha <= 0)) fireworks.splice(i, 1);
+      });
+    }
+
+    // 互動
+    const msgs = [
+      "SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃de話","嘻嘻嘻嘻😝",
+      "統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"
+    ];
+    const gift = document.getElementById('giftBox');
+    const hint = document.getElementById('hint');
+    const msgC = document.getElementById('messageContainer');
+    const music = document.getElementById('bgMusic');
+
+    gift.addEventListener('click', async () => {
+      document.getElementById('background').innerHTML = '';
+      canvas.style.display = 'block';
+      animateFireworks();
+      gift.style.display = 'none';
+      hint.style.display = 'none';
+      music.play().catch(() => {});
+      while (1) {
+        for (let i = 0; i < msgs.length; i++) {
+          msgC.innerHTML = '';
+          let div = document.createElement('div');
+          div.className = i === msgs.length - 1 ? 'final' : 'message';
+          msgC.appendChild(div);
+          for (let j = 1; j <= msgs[i].length; j++) {
+            div.textContent = msgs[i].slice(0, j);
+            await new Promise(r => setTimeout(r, 100));
+          }
+          await new Promise(r => setTimeout(r, 1000));
+          div.style.opacity = '0';
+          await new Promise(r => setTimeout(r, 308));
+          div.style.opacity = '1';
         }
       }
     });
