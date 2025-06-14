@@ -17,7 +17,8 @@
       width: 150px;
       height: 4px;
       pointer-events: none;
-      animation: shoot 3s linear infinite;
+      transform: rotate(45deg); /* ✅ 固定方向 */
+      animation: shoot45 3s linear infinite;
     }
 
     .meteor-body {
@@ -61,9 +62,15 @@
       animation: twinkle 1.5s infinite;
     }
 
-    @keyframes shoot {
-      0% { transform: translate(0, 0) rotate(45deg); opacity: 1; }
-      100% { transform: translate(600px, 600px) rotate(45deg); opacity: 0; }
+    @keyframes shoot45 {
+      0% {
+        transform: translate(0, 0) rotate(45deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(800px, 800px) rotate(45deg);
+        opacity: 0;
+      }
     }
 
     /* 煙花 Canvas */
@@ -117,44 +124,46 @@
       ['#ffe4e1', '#ffc1cc', '#ffdde1'], // 淺粉
       ['#f3d1f4', '#f8c6f8', '#fff0f5'], // 淡紫
     ];
+    
+  for(let i=0;i<16;i++){
+    const meteor = document.createElement('div');
+    meteor.className = 'meteor';
 
-    for(let i=0;i<16;i++){
-      const meteor = document.createElement('div');
-      meteor.className = 'meteor';
-      const body = document.createElement('div');
-      body.className = 'meteor-body';
+    const body = document.createElement('div');
+    body.className = 'meteor-body';
 
-      const head = document.createElement('div');
-      head.className = 'meteor-head';
+    const head = document.createElement('div');
+    head.className = 'meteor-head';
 
-      const tail = document.createElement('div');
-      tail.className = 'meteor-tail';
+    const tail = document.createElement('div');
+    tail.className = 'meteor-tail';
 
-      const colors = pastelColors[Math.floor(Math.random()*pastelColors.length)];
-      tail.style.background = `linear-gradient(to left, ${colors.join(',')})`;
-      head.style.background = colors[0];
-      head.style.boxShadow = `0 0 12px ${colors[1]}`;
+    const colors = pastelColors[Math.floor(Math.random()*pastelColors.length)];
+    tail.style.background = `linear-gradient(to left, ${colors.join(',')})`;
+    head.style.background = colors[0];
+    head.style.boxShadow = `0 0 12px ${colors[1]}`;
 
-      const particles = document.createElement('div');
-      particles.className = 'meteor-particles';
-      for (let j = 0; j < 4; j++) {
-        const dot = document.createElement('span');
-        particles.appendChild(dot);
-      }
-
-      body.appendChild(head);
-      body.appendChild(tail);
-      meteor.appendChild(body);
-      meteor.appendChild(particles);
-
-      const startX = Math.random() * window.innerWidth * 0.5;
-      const startY = Math.random() * window.innerHeight * 0.5;
-      meteor.style.left = `${startX}px`;
-      meteor.style.top = `${startY}px`;
-      meteor.style.animationDelay = Math.random() * 3 + 's';
-
-      bg.appendChild(meteor);
+    const particles = document.createElement('div');
+    particles.className = 'meteor-particles';
+    for (let j = 0; j < 4; j++) {
+      const dot = document.createElement('span');
+      particles.appendChild(dot);
     }
+
+    body.appendChild(head);
+    body.appendChild(tail);
+    meteor.appendChild(body);
+    meteor.appendChild(particles);
+
+    // ✅ 固定左上起飛，隨機偏移
+    const offsetX = Math.random() * 200 - 100;
+    const offsetY = Math.random() * 200 - 100;
+    meteor.style.left = `${offsetX}px`;
+    meteor.style.top = `${offsetY}px`;
+    meteor.style.animationDelay = Math.random() * 3 + 's';
+
+    document.getElementById('background').appendChild(meteor);
+  }
 
     // 煙花邏輯（不變）
     const canvas = document.getElementById('fireworks');
