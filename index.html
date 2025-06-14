@@ -8,29 +8,19 @@
     * { margin:0; padding:0; box-sizing:border-box; }
     html, body { width:100%; height:100%; overflow:hidden; background:#000; font-family:'Segoe UI',sans-serif; }
 
+    /* 背景層 */
     #background { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
-
-    .star {
-      position:absolute;
-      width:2px; height:2px;
-      background:#fff; border-radius:50%;
-      animation:twinkle 2s infinite ease-in-out;
-    }
-    @keyframes twinkle {
-      0%,100% {opacity:0.2;}
-      50% {opacity:1;}
-    }
+    .star { position:absolute; width:2px; height:2px; background:#fff; border-radius:50%; animation:twinkle 2s infinite ease-in-out; }
+    @keyframes twinkle {0%,100%{opacity:0.2;}50%{opacity:1;}}
 
     .meteor {
-      position:absolute;
-      width:180px;
-      height:3px;
-      background: linear-gradient(90deg, white, #ff8cf9, transparent);
-      box-shadow: 0 0 12px #fff;
+      position: absolute;
+      width: 120px;
+      height: 2px;
+      background: linear-gradient(to left, #ffd6f5, #ffc3e0, #ffe1f5, transparent);
       transform: rotate(45deg);
-      animation: shoot 3s linear infinite;
-      filter: drop-shadow(0 0 8px #ff66ff);
-      border-radius: 2px;
+      animation: shoot 2.5s linear infinite;
+      filter: drop-shadow(0 0 8px #ffb6e6);
     }
 
     @keyframes shoot {
@@ -40,96 +30,43 @@
       }
       100% {
         opacity: 0;
-        transform: translate(600px, 600px) rotate(45deg);
+        transform: translate(500px, 500px) rotate(45deg);
       }
     }
 
-    .meteor-particle {
+    .MeteorParticle {
       position: absolute;
       width: 4px;
       height: 4px;
+      background: rgba(255, 182, 230, 0.8);
       border-radius: 50%;
-      pointer-events: none;
-      z-index: 0;
-      animation: particleFade 1.2s ease-out forwards;
+      filter: blur(1px);
+      animation: particleFade 1.5s ease-out forwards;
     }
 
     @keyframes particleFade {
-      0% {
-        opacity: 1;
-        transform: scale(1);
-      }
-      100% {
+      to {
         opacity: 0;
-        transform: scale(0.2) translateY(20px);
+        transform: translateY(20px) scale(0.5);
       }
     }
 
+    /* 煙花 Canvas */
     #fireworks { position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none; display:none; }
 
-    .container {
-      position:fixed;
-      top:50%; left:50%;
-      transform:translate(-50%,-50%);
-      z-index:2;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      pointer-events:auto;
-    }
-
+    /* 互動內容 */
+    .container { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:2; display:flex; flex-direction:column; align-items:center; pointer-events:auto; }
     #giftBox { cursor:pointer; }
+    #hint { margin-top:8px; font-size:1.2rem; color:#ffeb3b; animation:blink 1.5s infinite; pointer-events:none; }
+    @keyframes blink {0%,100%{opacity:1;}50%{opacity:0.3;}}
 
-    #hint {
-      margin-top:8px;
-      font-size:1.2rem;
-      color:#ffeb3b;
-      animation:blink 1.5s infinite;
-      pointer-events:none;
-    }
+    #messageContainer { margin-top:20px; display:flex; flex-direction:column; align-items:center; }
+    .message {  color: #fff;font-size:1.8rem; white-space:nowrap; opacity:0; animation:float 4s ease-in-out, glow 2s ease-in-out infinite alternate; }
+    @keyframes float {0%{transform:translateY(10px);opacity:0;}10%,90%{opacity:1;}100%{transform:translateY(-10px);opacity:0;}}
+    @keyframes glow {from{text-shadow:0 0 5px #fff,0 0 10px #ff69b4;}to{text-shadow:0 0 30px #ff66cc,0 0 40px #ffccff;}}
 
-    @keyframes blink {
-      0%,100%{opacity:1;}
-      50%{opacity:0.3;}
-    }
-
-    #messageContainer {
-      margin-top:20px;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-    }
-
-    .message {
-      color: #fff;
-      font-size:1.8rem;
-      white-space:nowrap;
-      opacity:0;
-      animation:float 4s ease-in-out, glow 2s ease-in-out infinite alternate;
-    }
-
-    @keyframes float {
-      0%{transform:translateY(10px);opacity:0;}
-      10%,90%{opacity:1;}
-      100%{transform:translateY(-10px);opacity:0;}
-    }
-
-    @keyframes glow {
-      from{text-shadow:0 0 5px #fff,0 0 10px #ff69b4;}
-      to{text-shadow:0 0 30px #ff66cc,0 0 40px #ffccff;}
-    }
-
-    .final {
-      color: #fff;
-      font-size:2.2rem;
-      font-weight:bold;
-      animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate;
-    }
-
-    @keyframes finalZoom {
-      from{transform:scale(1);}
-      to{transform:scale(1.5);}
-    }
+    .final {  color: #fff;font-size:2.2rem; font-weight:bold; animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate; }
+    @keyframes finalZoom {from{transform:scale(1);}to{transform:scale(1.5);} }
   </style>
 </head>
 <body>
@@ -143,7 +80,6 @@
     <div id="messageContainer"></div>
     <audio id="bgMusic" src="birthday-song.mp3" loop></audio>
   </div>
-
   <script>
     // 星星
     const bg = document.getElementById('background');
@@ -156,39 +92,36 @@
       bg.appendChild(s);
     }
 
-    // 彩色流星 + 粒子尾巴
-    function createMeteor() {
-      const m=document.createElement('div');
-      m.className='meteor';
-      const isLeft = Math.random()<0.5;
-      m.style.left = isLeft ? '-20%' : (Math.random()*80 + 10)+'vw';
-      m.style.top = isLeft ? (Math.random()*80 + 10)+'vh' : '-20%';
-      m.style.animationDuration = (Math.random()*1.5 + 2) + 's';
-      m.style.transform = 'rotate(45deg)';
+    // 流星（粉嫩流光 + 粒子尾巴）
+    for(let i=0;i<22;i++){
+      const m = document.createElement('div');
+      m.className = 'meteor';
+
+      if(Math.random()<0.5){
+        m.style.left='-20%';
+        m.style.top=Math.random()*100+'vh';
+      } else {
+        m.style.top='-20%';
+        m.style.left=Math.random()*100+'vw';
+      }
+
+      m.style.animationDelay = Math.random()*2+'s';
+
+      // 添加粒子尾巴
+      const particleCount = 3 + Math.floor(Math.random() * 3);
+      for (let j = 0; j < particleCount; j++) {
+        const p = document.createElement('span');
+        p.className = 'MeteorParticle';
+        p.style.left = Math.random()*100 + 'px';
+        p.style.top = (Math.random()*4 - 2) + 'px';
+        p.style.opacity = Math.random();
+        m.appendChild(p);
+      }
+
       bg.appendChild(m);
-
-      // 粒子尾巴
-      let count = 0;
-      const particleInterval = setInterval(() => {
-        const p = document.createElement('div');
-        p.className = 'meteor-particle';
-        const hue = Math.floor(Math.random()*360);
-        p.style.background = `hsl(${hue}, 100%, 70%)`;
-        p.style.top = m.offsetTop + 2 + 'px';
-        p.style.left = m.offsetLeft + 2 + 'px';
-        bg.appendChild(p);
-        setTimeout(() => p.remove(), 1200);
-        if (++count > 10) clearInterval(particleInterval);
-      }, 80);
-
-      setTimeout(() => m.remove(), 4000);
     }
 
-    setInterval(() => {
-      createMeteor();
-    }, 800);
-
-    // 煙花效果
+    // 煙花升級
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
@@ -215,7 +148,7 @@
         ctx.globalAlpha = this.alpha;
         ctx.fillStyle = this.color;
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 3);
         ctx.fill();
         ctx.globalAlpha = 1;
       }
@@ -228,7 +161,7 @@
         const y = Math.random() * canvas.height * 0.5;
         const baseHue = Math.floor(Math.random() * 360);
         for (let i = 0; i < 20; i++) {
-          const color = `hsl(${(baseHue + Math.random()*60)%360}, 100%, 60%)`;
+          const color = `hsl(${(baseHue + Math.random()*60) % 360}, 100%, 60%)`;
           this.particles.push(new Particle(x, y, color));
         }
       }
@@ -250,7 +183,7 @@
       });
     }
 
-    // 顯示訊息
+    // 互動文字
     const msgs = [
       "SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃de話","嘻嘻嘻嘻😝",
       "統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"
