@@ -10,86 +10,76 @@
 
     #background { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
 
+    /* ✨ 星星 */
     .star {
       position:absolute;
-      width:2px; height:2px;
+      width:2px;
+      height:2px;
       background:#fff;
       border-radius:50%;
       animation:twinkle 2s infinite ease-in-out;
     }
     @keyframes twinkle {
-      0%,100%{opacity:0.2;}
-      50%{opacity:1;}
+      0%,100% { opacity:0.2; }
+      50% { opacity:1; }
     }
 
-    .meteor-wrapper {
+    /* 💖 流星（頭尾分離 + 漂浮粒子） */
+    .meteor {
       position: absolute;
       pointer-events: none;
-      transform: rotate(45deg);
       animation: shoot 3s linear infinite;
-    }
-
-    .meteor-core {
-      position: relative;
-      width: 0; height: 0;
     }
 
     .meteor-head {
       position: absolute;
-      width: 14px; height: 14px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
-      background: radial-gradient(circle, #fff 0%, rgba(255,192,203,0.8) 50%, transparent 80%);
-      box-shadow: 0 0 12px rgba(255,192,203,0.8);
+      background: radial-gradient(circle, #fff, pink, transparent);
+      box-shadow: 0 0 20px rgba(255, 200, 255, 0.8);
     }
 
     .meteor-tail {
       position: absolute;
-      left: 5px; top: 5px;
-      width: 120px; height: 4px;
-      background: linear-gradient(to left, rgba(255,192,203,0.6), rgba(255,182,193,0.2), transparent);
-      border-radius: 50%;
-      filter: blur(1px);
+      top: 0;
+      left: -100px;
+      width: 120px;
+      height: 3px;
+      background: linear-gradient(to left, pink, violet, transparent);
+      filter: blur(2px);
+      transform: rotate(45deg);
     }
 
-    .meteor-sparkle {
+    .meteor-particle {
       position: absolute;
-      width: 3px; height: 3px;
+      width: 4px;
+      height: 4px;
       background: white;
       border-radius: 50%;
       opacity: 0.8;
-      animation: sparkle 1s infinite;
+      animation: blink 1.2s infinite ease-in-out;
     }
 
-    @keyframes sparkle {
-      0%, 100% { opacity: 0.3; }
-      50% { opacity: 1; }
+    @keyframes blink {
+      0%, 100% { opacity: 0.2; transform: translateY(0); }
+      50% { opacity: 1; transform: translateY(-5px); }
     }
 
     @keyframes shoot {
-      0% { opacity: 1; transform: translate(0, 0) rotate(45deg); }
-      100% { opacity: 0; transform: translate(500px, 500px) rotate(45deg); }
+      0% { transform: translate(0, 0) rotate(45deg); opacity: 1; }
+      100% { transform: translate(600px, 600px) rotate(45deg); opacity: 0; }
     }
 
-    #fireworks {
-      position:fixed;
-      top:0; left:0;
-      width:100%; height:100%;
-      z-index:1;
-      pointer-events:none;
-      display:none;
-    }
+    /* 其他樣式（略） */
+    #fireworks { position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none; display:none; }
 
     .container {
-      position:fixed;
-      top:50%; left:50%;
+      position:fixed; top:50%; left:50%;
       transform:translate(-50%,-50%);
-      z-index:2;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      pointer-events:auto;
+      z-index:2; display:flex;
+      flex-direction:column; align-items:center; pointer-events:auto;
     }
-
     #giftBox { cursor:pointer; }
     #hint {
       margin-top:8px;
@@ -97,10 +87,6 @@
       color:#ffeb3b;
       animation:blink 1.5s infinite;
       pointer-events:none;
-    }
-    @keyframes blink {
-      0%,100%{opacity:1;}
-      50%{opacity:0.3;}
     }
 
     #messageContainer {
@@ -125,8 +111,8 @@
     }
 
     @keyframes glow {
-      from {text-shadow:0 0 5px #fff,0 0 10px #ff69b4;}
-      to {text-shadow:0 0 30px #ff66cc,0 0 40px #ffccff;}
+      from { text-shadow:0 0 5px #fff,0 0 10px #ff69b4; }
+      to { text-shadow:0 0 30px #ff66cc,0 0 40px #ffccff; }
     }
 
     .final {
@@ -135,10 +121,9 @@
       font-weight:bold;
       animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate;
     }
-
     @keyframes finalZoom {
-      from {transform:scale(1);}
-      to {transform:scale(1.5);}
+      from { transform:scale(1); }
+      to { transform:scale(1.5); }
     }
   </style>
 </head>
@@ -153,57 +138,62 @@
     <div id="messageContainer"></div>
     <audio id="bgMusic" src="birthday-song.mp3" loop></audio>
   </div>
+
   <script>
     const bg = document.getElementById('background');
-    for(let i=0; i<100; i++){
+
+    // 🌟 星星
+    for(let i=0;i<100;i++){
       const s = document.createElement('div');
       s.className = 'star';
-      s.style.top = Math.random() * 100 + 'vh';
-      s.style.left = Math.random() * 100 + 'vw';
-      s.style.animationDelay = Math.random() * 3 + 's';
+      s.style.top = Math.random()*100 + 'vh';
+      s.style.left = Math.random()*100 + 'vw';
+      s.style.animationDelay = Math.random()*3 + 's';
       bg.appendChild(s);
     }
 
-    const pastelColors = [
-      ['#ffe4ec', '#ffc1cc', '#ffb3e6'],
-      ['#f0f8ff', '#d1e0ff', '#bcd4ff'],
-      ['#e6f2ff', '#d9e6ff', '#ccddff'],
-      ['#fff0f5', '#ffe6f0', '#ffd9ec']
-    ];
-
-    for(let i=0;i<20;i++){
-      const wrapper = document.createElement('div');
-      wrapper.className = 'meteor-wrapper';
-      wrapper.style.top = Math.random() * 100 + 'vh';
-      wrapper.style.left = Math.random() * 100 + 'vw';
-      wrapper.style.animationDelay = Math.random() * 2 + 's';
-
-      const core = document.createElement('div');
-      core.className = 'meteor-core';
+    // 🌠 流星生成
+    function createMeteor() {
+      const m = document.createElement('div');
+      m.className = 'meteor';
+      const x = Math.random() * window.innerWidth * 0.8;
+      const y = Math.random() * window.innerHeight * 0.5;
+      m.style.left = `${x}px`;
+      m.style.top = `${y}px`;
+      m.style.animationDelay = Math.random() * 2 + 's';
 
       const head = document.createElement('div');
       head.className = 'meteor-head';
+      m.appendChild(head);
 
       const tail = document.createElement('div');
       tail.className = 'meteor-tail';
+      tail.style.background = `linear-gradient(to left, hsl(${Math.random()*360}, 100%, 80%), transparent)`;
+      m.appendChild(tail);
 
-      // 尾部閃爍粒子
-      for (let j = 0; j < 3; j++) {
-        const sparkle = document.createElement('div');
-        sparkle.className = 'meteor-sparkle';
-        sparkle.style.left = -10 - Math.random() * 30 + 'px';
-        sparkle.style.top = Math.random() * 10 + 'px';
-        sparkle.style.animationDelay = Math.random() + 's';
-        core.appendChild(sparkle);
+      // 添加閃爍粒子
+      for (let i = 0; i < 3; i++) {
+        const p = document.createElement('div');
+        p.className = 'meteor-particle';
+        p.style.top = (Math.random()*10 - 5) + 'px';
+        p.style.left = (-Math.random()*60) + 'px';
+        p.style.animationDelay = Math.random() + 's';
+        m.appendChild(p);
       }
 
-      core.appendChild(head);
-      core.appendChild(tail);
-      wrapper.appendChild(core);
-      bg.appendChild(wrapper);
+      bg.appendChild(m);
+
+      setTimeout(() => bg.removeChild(m), 3500);
     }
 
-    // 煙火
+    for(let i=0; i<22; i++) {
+      setTimeout(() => {
+        setInterval(createMeteor, 4000 + Math.random() * 2000);
+        createMeteor();
+      }, i * 300);
+    }
+
+    // ✨ 煙花動畫、訊息播放（保留原本）
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
@@ -264,7 +254,6 @@
       });
     }
 
-    // 文字訊息
     const msgs = [
       "SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃de話","嘻嘻嘻嘻😝",
       "統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"
