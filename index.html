@@ -9,71 +9,137 @@
     html, body { width:100%; height:100%; overflow:hidden; background:#000; font-family:'Segoe UI',sans-serif; }
 
     #background { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
-    .star { position:absolute; width:2px; height:2px; background:#fff; border-radius:50%; animation:twinkle 2s infinite ease-in-out; }
-    @keyframes twinkle {0%,100%{opacity:0.2;}50%{opacity:1;}}
 
-    .meteor-container {
+    .star {
+      position:absolute;
+      width:2px; height:2px;
+      background:#fff;
+      border-radius:50%;
+      animation:twinkle 2s infinite ease-in-out;
+    }
+    @keyframes twinkle {
+      0%,100%{opacity:0.2;}
+      50%{opacity:1;}
+    }
+
+    .meteor-wrapper {
       position: absolute;
-      width: 200px;
-      height: 4px;
-      overflow: visible;
       pointer-events: none;
       transform: rotate(45deg);
       animation: shoot 3s linear infinite;
     }
 
     .meteor-core {
-      width: 120px;
-      height: 2px;
-      background: linear-gradient(to left, #ffe6f0, #ffccff, transparent);
-      border-radius: 4px;
-      position: absolute;
-      top: 1px;
-      left: 0;
-      box-shadow: 0 0 8px #ffccff, 0 0 12px #ffc0cb;
+      position: relative;
+      width: 0; height: 0;
     }
 
-    .meteor-particles {
+    .meteor-head {
       position: absolute;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff 0%, rgba(255,192,203,0.8) 50%, transparent 80%);
+      box-shadow: 0 0 12px rgba(255,192,203,0.8);
     }
 
-    .particle {
+    .meteor-tail {
       position: absolute;
-      width: 4px;
-      height: 4px;
+      left: 5px; top: 5px;
+      width: 120px; height: 4px;
+      background: linear-gradient(to left, rgba(255,192,203,0.6), rgba(255,182,193,0.2), transparent);
+      border-radius: 50%;
+      filter: blur(1px);
+    }
+
+    .meteor-sparkle {
+      position: absolute;
+      width: 3px; height: 3px;
       background: white;
       border-radius: 50%;
-      opacity: 0.7;
-      animation: sparkle 1s infinite alternate ease-in-out;
+      opacity: 0.8;
+      animation: sparkle 1s infinite;
     }
 
     @keyframes sparkle {
-      0% { opacity: 0.2; transform: scale(0.5); }
-      100% { opacity: 1; transform: scale(1.2); }
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
     }
 
     @keyframes shoot {
-      0% { opacity:1; transform:translate(0,0) rotate(45deg);}
-      100% { opacity:0; transform:translate(600px,600px) rotate(45deg);}
+      0% { opacity: 1; transform: translate(0, 0) rotate(45deg); }
+      100% { opacity: 0; transform: translate(500px, 500px) rotate(45deg); }
     }
 
-    #fireworks { position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none; display:none; }
+    #fireworks {
+      position:fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      z-index:1;
+      pointer-events:none;
+      display:none;
+    }
 
-    .container { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:2; display:flex; flex-direction:column; align-items:center; pointer-events:auto; }
+    .container {
+      position:fixed;
+      top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      z-index:2;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      pointer-events:auto;
+    }
+
     #giftBox { cursor:pointer; }
-    #hint { margin-top:8px; font-size:1.2rem; color:#ffeb3b; animation:blink 1.5s infinite; pointer-events:none; }
-    @keyframes blink {0%,100%{opacity:1;}50%{opacity:0.3;}}
+    #hint {
+      margin-top:8px;
+      font-size:1.2rem;
+      color:#ffeb3b;
+      animation:blink 1.5s infinite;
+      pointer-events:none;
+    }
+    @keyframes blink {
+      0%,100%{opacity:1;}
+      50%{opacity:0.3;}
+    }
 
-    #messageContainer { margin-top:20px; display:flex; flex-direction:column; align-items:center; }
-    .message { color:#fff; font-size:1.8rem; white-space:nowrap; opacity:0; animation:float 4s ease-in-out, glow 2s ease-in-out infinite alternate; }
-    @keyframes float {0%{transform:translateY(10px);opacity:0;}10%,90%{opacity:1;}100%{transform:translateY(-10px);opacity:0;}}
-    @keyframes glow {from{text-shadow:0 0 5px #fff,0 0 10px #ff69b4;}to{text-shadow:0 0 30px #ff66cc,0 0 40px #ffccff;}}
+    #messageContainer {
+      margin-top:20px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
 
-    .final { color:#fff; font-size:2.2rem; font-weight:bold; animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate; }
-    @keyframes finalZoom {from{transform:scale(1);}to{transform:scale(1.5);} }
+    .message {
+      color: #fff;
+      font-size:1.8rem;
+      white-space:nowrap;
+      opacity:0;
+      animation:float 4s ease-in-out, glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes float {
+      0%{transform:translateY(10px);opacity:0;}
+      10%,90%{opacity:1;}
+      100%{transform:translateY(-10px);opacity:0;}
+    }
+
+    @keyframes glow {
+      from {text-shadow:0 0 5px #fff,0 0 10px #ff69b4;}
+      to {text-shadow:0 0 30px #ff66cc,0 0 40px #ffccff;}
+    }
+
+    .final {
+      color: #fff;
+      font-size:2.2rem;
+      font-weight:bold;
+      animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes finalZoom {
+      from {transform:scale(1);}
+      to {transform:scale(1.5);}
+    }
   </style>
 </head>
 <body>
@@ -89,49 +155,55 @@
   </div>
   <script>
     const bg = document.getElementById('background');
-    for(let i=0;i<100;i++){
-      const s=document.createElement('div');
-      s.className='star';
-      s.style.top=Math.random()*100+'vh';
-      s.style.left=Math.random()*100+'vw';
-      s.style.animationDelay=Math.random()*3+'s';
+    for(let i=0; i<100; i++){
+      const s = document.createElement('div');
+      s.className = 'star';
+      s.style.top = Math.random() * 100 + 'vh';
+      s.style.left = Math.random() * 100 + 'vw';
+      s.style.animationDelay = Math.random() * 3 + 's';
       bg.appendChild(s);
     }
 
-    // 幻彩粉嫩流星
-    const pastelColors = ['#ffc3e0', '#ffd6f5', '#ffe1f5', '#e0ccff', '#f8ccff', '#ccf5ff', '#ffe6fa'];
+    const pastelColors = [
+      ['#ffe4ec', '#ffc1cc', '#ffb3e6'],
+      ['#f0f8ff', '#d1e0ff', '#bcd4ff'],
+      ['#e6f2ff', '#d9e6ff', '#ccddff'],
+      ['#fff0f5', '#ffe6f0', '#ffd9ec']
+    ];
 
-    for(let i=0;i<18;i++){
-      const container = document.createElement('div');
-      container.className = 'meteor-container';
-      container.style.left = Math.random() * window.innerWidth + 'px';
-      container.style.top = Math.random() * window.innerHeight + 'px';
-      container.style.animationDelay = Math.random()*3 + 's';
+    for(let i=0;i<20;i++){
+      const wrapper = document.createElement('div');
+      wrapper.className = 'meteor-wrapper';
+      wrapper.style.top = Math.random() * 100 + 'vh';
+      wrapper.style.left = Math.random() * 100 + 'vw';
+      wrapper.style.animationDelay = Math.random() * 2 + 's';
 
-      const meteor = document.createElement('div');
-      meteor.className = 'meteor-core';
-      const color1 = pastelColors[Math.floor(Math.random()*pastelColors.length)];
-      const color2 = pastelColors[Math.floor(Math.random()*pastelColors.length)];
-      meteor.style.background = `linear-gradient(to left, ${color1}, ${color2}, transparent)`;
-      meteor.style.boxShadow = `0 0 8px ${color2}, 0 0 16px ${color1}`;
+      const core = document.createElement('div');
+      core.className = 'meteor-core';
 
-      const particles = document.createElement('div');
-      particles.className = 'meteor-particles';
-      for(let j=0;j<4;j++){
-        const dot = document.createElement('div');
-        dot.className = 'particle';
-        dot.style.left = `${110 + j*15}px`;
-        dot.style.top = `${1 + j*2}px`;
-        dot.style.animationDelay = (Math.random()*1) + 's';
-        particles.appendChild(dot);
+      const head = document.createElement('div');
+      head.className = 'meteor-head';
+
+      const tail = document.createElement('div');
+      tail.className = 'meteor-tail';
+
+      // 尾部閃爍粒子
+      for (let j = 0; j < 3; j++) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'meteor-sparkle';
+        sparkle.style.left = -10 - Math.random() * 30 + 'px';
+        sparkle.style.top = Math.random() * 10 + 'px';
+        sparkle.style.animationDelay = Math.random() + 's';
+        core.appendChild(sparkle);
       }
 
-      container.appendChild(meteor);
-      container.appendChild(particles);
-      bg.appendChild(container);
+      core.appendChild(head);
+      core.appendChild(tail);
+      wrapper.appendChild(core);
+      bg.appendChild(wrapper);
     }
 
-    // Fireworks
+    // 煙火
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
@@ -182,7 +254,6 @@
       requestAnimationFrame(animateFireworks);
       ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-
       if (Math.random() < 0.05) fireworks.push(new Firework());
       fireworks.forEach((fw, i) => {
         fw.particles.forEach(p => {
@@ -193,7 +264,7 @@
       });
     }
 
-    // Messages
+    // 文字訊息
     const msgs = [
       "SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃de話","嘻嘻嘻嘻😝",
       "統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"
