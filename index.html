@@ -13,20 +13,55 @@
     .star { position:absolute; width:2px; height:2px; background:#fff; border-radius:50%; animation:twinkle 2s infinite ease-in-out; }
     @keyframes twinkle {0%,100%{opacity:0.2;}50%{opacity:1;}}
 
+    /* 流星带尾焰与粒子 */
     .meteor {
       position: absolute;
-      width: 180px;
-      height: 3px;
-      background: linear-gradient(to left, #fff, #66ccff, transparent);
-      transform: rotate(45deg);
-      box-shadow: 0 0 6px #66ccff, 0 0 15px #fff;
-      border-radius: 2px;
-      animation: shoot 2.5s linear infinite;
+      width: 2px;
+      height: 2px;
+      background: #fff;
+      border-radius: 50%;
+      filter: drop-shadow(0 0 6px #fff);
+      animation: meteorMove var(--duration) linear var(--delay) infinite;
+    }
+    /* 尾焰拖尾效果 */
+    .meteor::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: var(--tail-length);
+      height: 2px;
+      background: linear-gradient(to left, rgba(255,255,255,1), rgba(255,200,200,0.6), transparent);
+      transform: translateX(-100%);
+      filter: blur(2px);
+      animation: tailFade var(--duration) linear var(--delay) infinite;
+    }
+    @keyframes meteorMove {
+      0% {
+        opacity: 1;
+        transform: translate(var(--start-x), var(--start-y)) rotate(var(--angle));
+      }
+      100% {
+        opacity: 0;
+        transform: translate(calc(var(--start-x) + var(--dx)), calc(var(--start-y) + var(--dy))) rotate(var(--angle));
+      }
+    }
+    @keyframes tailFade {
+      0% { opacity: 1; }
+      80% { opacity: 0.2; }
+      100% { opacity: 0; }
     }
 
-    @keyframes shoot {
-      0% { opacity: 1; transform: translate(0, 0) rotate(45deg); }
-      100% { opacity: 0; transform: translate(600px, 600px) rotate(45deg); }
+    /* 隕石尾部閃光粒子 */
+    .flare {
+      position: absolute;
+      background: rgba(255,255,200,0.8);
+      border-radius: 50%;
+      filter: blur(1px);
+      animation: flareFade 0.8s ease-out forwards;
+    }
+    @keyframes flareFade {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(2); opacity: 0; }
     }
 
     /* 煙花 Canvas */
@@ -39,11 +74,11 @@
     @keyframes blink {0%,100%{opacity:1;}50%{opacity:0.3;}}
 
     #messageContainer { margin-top:20px; display:flex; flex-direction:column; align-items:center; }
-    .message {  color: #fff;font-size:1.8rem; white-space:nowrap; opacity:0; animation:float 4s ease-in-out, glow 2s ease-in-out infinite alternate; }
+    .message { color: #fff; font-size:1.8rem; white-space:nowrap; opacity:0; animation:float 4s ease-in-out, glow 2s ease-in-out infinite alternate; }
     @keyframes float {0%{transform:translateY(10px);opacity:0;}10%,90%{opacity:1;}100%{transform:translateY(-10px);opacity:0;}}
     @keyframes glow {from{text-shadow:0 0 5px #fff,0 0 10px #ff69b4;}to{text-shadow:0 0 30px #ff66cc,0 0 40px #ffccff;}}
 
-    .final {  color: #fff;font-size:2.2rem; font-weight:bold; animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate; }
+    .final { color: #fff; font-size:2.2rem; font-weight:bold; animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate; }
     @keyframes finalZoom {from{transform:scale(1);}to{transform:scale(1.5);} }
   </style>
 </head>
@@ -59,127 +94,58 @@
     <audio id="bgMusic" src="birthday-song.mp3" loop></audio>
   </div>
   <script>
-    // 星星與流星
     const bg = document.getElementById('background');
-    for(let i=0;i<100;i++){
-      const s=document.createElement('div');
-      s.className='star';
-      s.style.top=Math.random()*100+'vh';
-      s.style.left=Math.random()*100+'vw';
-      s.style.animationDelay=Math.random()*3+'s';
+    // 星星
+    for (let i=0; i<100; i++) {
+      const s = document.createElement('div'); s.className='star';
+      s.style.top = Math.random()*100 + 'vh';
+      s.style.left = Math.random()*100 + 'vw';
+      s.style.animationDelay = Math.random()*3 + 's';
       bg.appendChild(s);
     }
-
-    for(let i=0;i<22;i++){
-      const m=document.createElement('div');
-      m.className='meteor';
-      if(Math.random()<0.5){
-        m.style.left='-30%';
-        m.style.top=Math.random()*100+'vh';
-      }else{
-        m.style.top='-30%';
-        m.style.left=Math.random()*100+'vw';
+    // 隕石(流星)
+    for (let i=0; i<30; i++) {
+      const m = document.createElement('div'); m.className='meteor';
+      const startX = Math.random()*window.innerWidth + 'px';
+      const startY = (Math.random()*window.innerHeight*0.2 - window.innerHeight*0.1) + 'px';
+      const angleVal = 45 + (Math.random()*60 - 30);
+      const angle = angleVal + 'deg';
+      const length = 400 + Math.random()*200;
+      const dx = Math.cos(angleVal * Math.PI/180) * length + 'px';
+      const dy = Math.sin(angleVal * Math.PI/180) * length + 'px';
+      const duration = (0.8 + Math.random()*1.2).toFixed(2) + 's';
+      const delay = (Math.random()*5).toFixed(2) + 's';
+      const tailLength = Math.floor(length/2) + 'px';
+      m.style.setProperty('--start-x', startX);
+      m.style.setProperty('--start-y', startY);
+      m.style.setProperty('--angle', angle);
+      m.style.setProperty('--dx', dx);
+      m.style.setProperty('--dy', dy);
+      m.style.setProperty('--duration', duration);
+      m.style.setProperty('--delay', delay);
+      m.style.setProperty('--tail-length', tailLength);
+      // 閃光粒子
+      const flareCount = 2 + Math.floor(Math.random()*3);
+      for (let j=0; j<flareCount; j++) {
+        const f = document.createElement('div'); f.className='flare';
+        const size = 3 + Math.random()*3;
+        f.style.width = size + 'px'; f.style.height = size + 'px';
+        f.style.top = '0px';
+        f.style.left = Math.random()*2 + 'px';
+        f.style.animationDelay = (Math.random()*duration.replace('s','')).toFixed(2) + 's';
+        m.appendChild(f);
       }
-      m.style.animationDelay=Math.random()*4+'s';
       bg.appendChild(m);
     }
-
-    // 煙花動畫
-    const canvas = document.getElementById('fireworks');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    class Particle {
-      constructor(x, y, color) {
-        const angle = Math.random() * 2 * Math.PI;
-        const speed = Math.random() * 2 + 1;
-        this.x = x;
-        this.y = y;
-        this.dx = Math.cos(angle) * speed;
-        this.dy = Math.sin(angle) * speed;
-        this.alpha = 1;
-        this.color = color;
-        this.size = Math.random() * 2 + 2;
-      }
-      update() {
-        this.x += this.dx;
-        this.y += this.dy;
-        this.alpha -= 0.015;
-      }
-      draw() {
-        ctx.globalAlpha = this.alpha;
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 3);
-        ctx.fill();
-        ctx.globalAlpha = 1;
-      }
-    }
-
-    class Firework {
-      constructor() {
-        this.particles = [];
-        const x = Math.random() * canvas.width;
-        const y = Math.random() * canvas.height * 0.5;
-        const baseHue = Math.floor(Math.random() * 360);
-        for (let i = 0; i < 20; i++) {
-          const color = `hsl(${(baseHue + Math.random()*60) % 360}, 100%, 60%)`;
-          this.particles.push(new Particle(x, y, color));
-        }
-      }
-    }
-
-    const fireworks = [];
-    function animateFireworks() {
-      requestAnimationFrame(animateFireworks);
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      if (Math.random() < 0.05) fireworks.push(new Firework());
-      fireworks.forEach((fw, i) => {
-        fw.particles.forEach(p => {
-          p.update();
-          p.draw();
-        });
-        if (fw.particles.every(p => p.alpha <= 0)) fireworks.splice(i, 1);
-      });
-    }
-
-    // 點擊事件
-    const msgs = [
-      "SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃de話","嘻嘻嘻嘻😝",
-      "統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"
-    ];
-    const gift = document.getElementById('giftBox');
-    const hint = document.getElementById('hint');
-    const msgC = document.getElementById('messageContainer');
-    const music = document.getElementById('bgMusic');
-
-    gift.addEventListener('click', async () => {
-      document.getElementById('background').innerHTML = '';
-      canvas.style.display = 'block';
-      animateFireworks();
-      gift.style.display = 'none';
-      hint.style.display = 'none';
-      music.play().catch(() => {});
-      while (1) {
-        for (let i = 0; i < msgs.length; i++) {
-          msgC.innerHTML = '';
-          let div = document.createElement('div');
-          div.className = i === msgs.length - 1 ? 'final' : 'message';
-          msgC.appendChild(div);
-          for (let j = 1; j <= msgs[i].length; j++) {
-            div.textContent = msgs[i].slice(0, j);
-            await new Promise(r => setTimeout(r, 100));
-          }
-          await new Promise(r => setTimeout(r, 1000));
-          div.style.opacity = '0';
-          await new Promise(r => setTimeout(r, 308));
-          div.style.opacity = '1';
-        }
-      }
-    });
+    // 煙火邏輯...
+    const canvas = document.getElementById('fireworks'), ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    class Particle {constructor(x,y,c){const a=Math.random()*2*Math.PI,s= Math.random()*2+1;this.x=x;this.y=y;this.dx=Math.cos(a)*s;this.dy=Math.sin(a)*s;this.alpha=1;this.color=c;this.size=Math.random()*2+2;}update(){this.x+=this.dx;this.y+=this.dy;this.alpha-=0.015;}draw(){ctx.globalAlpha=this.alpha;ctx.fillStyle=this.color;ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;}};
+    class Firework {constructor(){this.p=[];const x=Math.random()*canvas.width,y=Math.random()*canvas.height*0.5,h=Math.floor(Math.random()*360);for(let i=0;i<20;i++){this.p.push(new Particle(x,y,`hsl(${(h+Math.random()*60)%360},100%,60%)`));}}};
+    const fireworks=[];function animateFireworks(){requestAnimationFrame(animateFireworks);ctx.fillStyle='rgba(0,0,0,0.2)';ctx.fillRect(0,0,canvas.width,canvas.height);if(Math.random()<0.05)fireworks.push(new Firework());fireworks.forEach((fw,i)=>{fw.p.forEach(p=>{p.update();p.draw();});if(fw.p.every(p=>p.alpha<=0))fireworks.splice(i,1);});}
+    const msgs=["SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃de話","嘻嘻嘻嘻😝","統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"];
+    const gift=document.getElementById('giftBox'),hint=document.getElementById('hint'),msgC=document.getElementById('messageContainer'),music=document.getElementById('bgMusic');
+    gift.addEventListener('click',async()=>{bg.innerHTML='';canvas.style.display='block';animateFireworks();gift.style.display='none';hint.style.display='none';music.play().catch(()=>{});while(1){for(let i=0;i<msgs.length;i++){msgC.innerHTML='';const div=document.createElement('div');div.className=i===msgs.length-1?'final':'message';msgC.appendChild(div);for(let j=1;j<=msgs[i].length;j++){div.textContent=msgs[i].slice(0,j);await new Promise(r=>setTimeout(r,100));}await new Promise(r=>setTimeout(r,1000));div.style.opacity='0';await new Promise(r=>setTimeout(r,308));div.style.opacity='1';}}});
   </script>
 </body>
 </html>
