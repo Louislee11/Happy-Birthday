@@ -14,18 +14,7 @@
     .meteor { position:absolute; width:120px; height:2px; background:linear-gradient(to left, #fff, transparent); transform:rotate(45deg); animation:shoot 3s linear infinite; }
     @keyframes shoot { 0%{opacity:1;}100%{opacity:0; transform:translate(500px,500px) rotate(45deg);} }
 
-    .special-meteor {
-      width:140px;
-      height:3px;
-      background:linear-gradient(to left, rgba(255,255,255,0.8), transparent);
-      box-shadow:0 0 6px rgba(255,255,255,0.5);
-      animation:shoot 5s linear forwards, glowSpecial 2s infinite ease-in-out alternate;
-      z-index:3;
-    }
-    @keyframes glowSpecial {
-      from { filter: brightness(1.1); }
-      to { filter: brightness(1.8); }
-    }
+    .special-meteor { position:absolute; width:130px; height:3px; background:linear-gradient(to left, rgba(255,255,255,0.8), transparent); transform:rotate(45deg); animation:shoot 3.5s linear infinite; box-shadow: 0 0 6px 2px rgba(255,255,255,0.3); cursor: pointer; }
 
     #fireworks { position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none; display:none; }
 
@@ -35,25 +24,21 @@
     @keyframes blink {0%,100%{opacity:1;}50%{opacity:0.3;}}
 
     #messageContainer { margin-top:20px; display:flex; flex-direction:column; align-items:center; }
-    .message { color: #fff; font-size:1.8rem; white-space:nowrap; opacity:0; animation:float 4s ease-in-out, glow 2s ease-in-out infinite alternate; }
+    .message {  color: #fff;font-size:1.8rem; white-space:nowrap; opacity:0; animation:float 4s ease-in-out, glow 2s ease-in-out infinite alternate; }
     @keyframes float {0%{transform:translateY(10px);opacity:0;}10%,90%{opacity:1;}100%{transform:translateY(-10px);opacity:0;}}
     @keyframes glow {from{text-shadow:0 0 5px #fff,0 0 10px #ff69b4;}to{text-shadow:0 0 30px #ff66cc,0 0 40px #ffccff;}}
 
-    .final { color: #fff; font-size:2.2rem; font-weight:bold; animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate; }
+    .final {  color: #fff;font-size:2.2rem; font-weight:bold; animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate; }
     @keyframes finalZoom {from{transform:scale(1);}to{transform:scale(1.5);} }
 
-    #videoOverlay {
+    #confessionVideo {
       position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.95);
-      z-index: 10;
+      top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 999;
+      background: #000;
       display: none;
-      align-items: center;
-      justify-content: center;
     }
-    #videoOverlay video {
+    #confessionVideo video {
       width: 100vw;
       height: 100vh;
       object-fit: cover;
@@ -71,48 +56,30 @@
     <div id="messageContainer"></div>
     <audio id="bgMusic" src="birthday-song.mp3" loop></audio>
   </div>
-
-  <div id="videoOverlay">
-    <video id="confessVideo" src="https://www.w3schools.com/html/mov_bbb.mp4" playsinline autoplay></video>
+  <div id="confessionVideo">
+    <video src="https://www.w3schools.com/html/mov_bbb.mp4" autoplay controls playsinline></video>
   </div>
 
   <script>
     const bg = document.getElementById('background');
-    for(let i=0;i<100;i++){
-      const s=document.createElement('div');
-      s.className='star';
-      s.style.top=Math.random()*100+'vh';
-      s.style.left=Math.random()*100+'vw';
-      s.style.animationDelay=Math.random()*3+'s';
-      bg.appendChild(s);
-    }
-    for(let i=0;i<22;i++){
-      const m=document.createElement('div');
-      m.className='meteor';
-      if(Math.random()<0.5){m.style.left='-20%';m.style.top=Math.random()*100+'vh';}else{m.style.top='-20%';m.style.left=Math.random()*100+'vw';}
-      m.style.animationDelay=Math.random()*2+'s';
-      bg.appendChild(m);
-    }
+    for(let i=0;i<100;i++){const s=document.createElement('div');s.className='star';s.style.top=Math.random()*100+'vh';s.style.left=Math.random()*100+'vw';s.style.animationDelay=Math.random()*3+'s';bg.appendChild(s);}    
+    for(let i=0;i<22;i++){const m=document.createElement('div');m.className='meteor';if(Math.random()<0.5){m.style.left='-20%';m.style.top=Math.random()*100+'vh';}else{m.style.top='-20%';m.style.left=Math.random()*100+'vw';}m.style.animationDelay=Math.random()*2+'s';bg.appendChild(m);}    
 
+    // 特別流星
     const special = document.createElement('div');
-    special.className = 'meteor special-meteor';
-    special.style.top = Math.random()*80 + 'vh';
-    special.style.left = Math.random()*80 + 'vw';
-    special.style.cursor = 'pointer';
-    special.title = '✨';
-    special.addEventListener('click', () => {
-      document.getElementById('videoOverlay').style.display = 'flex';
-      const video = document.getElementById('confessVideo');
-      video.currentTime = 0;
-      video.play();
-    });
+    special.className = 'special-meteor';
+    special.style.left = Math.random() * 80 + '%';
+    special.style.top = Math.random() * 40 + '%';
     bg.appendChild(special);
-
-    const confessVideo = document.getElementById('confessVideo');
-    confessVideo.addEventListener('ended', () => {
-      document.getElementById('videoOverlay').style.display = 'none';
+    special.addEventListener('click', () => {
+      document.getElementById('confessionVideo').style.display = 'block';
+      document.querySelector('#confessionVideo video').play();
+    });
+    document.querySelector('#confessionVideo video').addEventListener('ended', () => {
+      document.getElementById('confessionVideo').style.display = 'none';
     });
 
+    // 煙火動畫
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
@@ -139,7 +106,7 @@
         ctx.globalAlpha = this.alpha;
         ctx.fillStyle = this.color;
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 3);
         ctx.fill();
         ctx.globalAlpha = 1;
       }
