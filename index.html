@@ -13,39 +13,20 @@
     .star { position:absolute; width:2px; height:2px; background:#fff; border-radius:50%; animation:twinkle 2s infinite ease-in-out; }
     @keyframes twinkle {0%,100%{opacity:0.2;}50%{opacity:1;}}
 
-    /* 流星（只保留多层渐变尾迹 + 尾部粒子） */
     .meteor {
       position: absolute;
-      width: 160px; /* 更長拖尾 */
-      height: 4px;  /* 更粗 */
-      background: linear-gradient(to left, #fff, transparent);
+      width: 180px;
+      height: 3px;
+      background: linear-gradient(to left, #fff, #66ccff, transparent);
       transform: rotate(45deg);
+      box-shadow: 0 0 6px #66ccff, 0 0 15px #fff;
+      border-radius: 2px;
       animation: shoot 2.5s linear infinite;
-      filter: drop-shadow(0 0 6px #fff);
     }
 
     @keyframes shoot {
-      0% {
-        opacity: 1;
-        transform: translate(var(--start-x), var(--start-y)) rotate(var(--angle));
-      }
-      100% {
-        opacity: 0;
-        transform: translate(calc(var(--start-x) + var(--dx)), calc(var(--start-y) + var(--dy))) rotate(var(--angle));
-      }
-    }
-
-    /* 粒子样式 */
-    .MeteorParticle {
-      position: absolute;
-      background: rgba(255,255,255,0.8);
-      border-radius: 50%;
-      filter: blur(1px);
-      animation: particleFade 1.5s ease-out forwards;
-    }
-
-    @keyframes particleFade {
-      to { opacity: 0; transform: translateY(20px) scale(0.5); }
+      0% { opacity: 1; transform: translate(0, 0) rotate(45deg); }
+      100% { opacity: 0; transform: translate(600px, 600px) rotate(45deg); }
     }
 
     /* 煙花 Canvas */
@@ -78,56 +59,94 @@
     <audio id="bgMusic" src="birthday-song.mp3" loop></audio>
   </div>
   <script>
-    // 星星
+    // 星星與流星
     const bg = document.getElementById('background');
     for(let i=0;i<100;i++){
-      const s=document.createElement('div');s.className='star';
+      const s=document.createElement('div');
+      s.className='star';
       s.style.top=Math.random()*100+'vh';
       s.style.left=Math.random()*100+'vw';
       s.style.animationDelay=Math.random()*3+'s';
       bg.appendChild(s);
     }
 
-    // 流星（多層漸變 + 尾部粒子）
     for(let i=0;i<22;i++){
       const m=document.createElement('div');
       m.className='meteor';
       if(Math.random()<0.5){
-        m.style.left='-20%';
+        m.style.left='-30%';
         m.style.top=Math.random()*100+'vh';
       }else{
-        m.style.top='-20%';
+        m.style.top='-30%';
         m.style.left=Math.random()*100+'vw';
       }
-      m.style.animationDelay=Math.random()*2+'s';
+      m.style.animationDelay=Math.random()*4+'s';
       bg.appendChild(m);
-    
-      // 尾跡粒子（加入小閃光）
-      const trailCount = Math.floor(Math.random() * 4) + 4; // 4~7顆
-      for (let j = 0; j < trailCount; j++) {
-        const t = document.createElement('div');
-        t.className = 'star';
-        t.style.width = '3px';
-        t.style.height = '3px';
-        t.style.top = parseFloat(m.style.top || 0) + j * 6 + 'px';
-        t.style.left = parseFloat(m.style.left || 0) + j * 6 + 'px';
-        t.style.opacity = (0.6 - j * 0.08).toFixed(2);
-        t.style.animationDelay = (Math.random() * 1.5) + 's';
-        t.style.transition = 'opacity 1s ease-out';
-        bg.appendChild(t);
-      }
     }
 
-    // 煙花 Canvas & 互動文字... (其餘維持不變)
+    // 煙花動畫
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    class Particle { /* ... 原本內容 ... */ }
-    class Firework { /* ... 原本內容 ... */ }
-    const fireworks = [];
-    function animateFireworks() { /* ... 原本內容 ... */ }
 
+    class Particle {
+      constructor(x, y, color) {
+        const angle = Math.random() * 2 * Math.PI;
+        const speed = Math.random() * 2 + 1;
+        this.x = x;
+        this.y = y;
+        this.dx = Math.cos(angle) * speed;
+        this.dy = Math.sin(angle) * speed;
+        this.alpha = 1;
+        this.color = color;
+        this.size = Math.random() * 2 + 2;
+      }
+      update() {
+        this.x += this.dx;
+        this.y += this.dy;
+        this.alpha -= 0.015;
+      }
+      draw() {
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 3);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    class Firework {
+      constructor() {
+        this.particles = [];
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height * 0.5;
+        const baseHue = Math.floor(Math.random() * 360);
+        for (let i = 0; i < 20; i++) {
+          const color = `hsl(${(baseHue + Math.random()*60) % 360}, 100%, 60%)`;
+          this.particles.push(new Particle(x, y, color));
+        }
+      }
+    }
+
+    const fireworks = [];
+    function animateFireworks() {
+      requestAnimationFrame(animateFireworks);
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      if (Math.random() < 0.05) fireworks.push(new Firework());
+      fireworks.forEach((fw, i) => {
+        fw.particles.forEach(p => {
+          p.update();
+          p.draw();
+        });
+        if (fw.particles.every(p => p.alpha <= 0)) fireworks.splice(i, 1);
+      });
+    }
+
+    // 點擊事件
     const msgs = [
       "SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃de話","嘻嘻嘻嘻😝",
       "統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"
@@ -144,7 +163,22 @@
       gift.style.display = 'none';
       hint.style.display = 'none';
       music.play().catch(() => {});
-      while (1) { /* ... 原本內容 ... */ }
+      while (1) {
+        for (let i = 0; i < msgs.length; i++) {
+          msgC.innerHTML = '';
+          let div = document.createElement('div');
+          div.className = i === msgs.length - 1 ? 'final' : 'message';
+          msgC.appendChild(div);
+          for (let j = 1; j <= msgs[i].length; j++) {
+            div.textContent = msgs[i].slice(0, j);
+            await new Promise(r => setTimeout(r, 100));
+          }
+          await new Promise(r => setTimeout(r, 1000));
+          div.style.opacity = '0';
+          await new Promise(r => setTimeout(r, 308));
+          div.style.opacity = '1';
+        }
+      }
     });
   </script>
 </body>
