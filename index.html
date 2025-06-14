@@ -13,7 +13,7 @@
     .star { position:absolute; width:2px; height:2px; background:#fff; border-radius:50%; animation:twinkle 2s infinite ease-in-out; }
     @keyframes twinkle {0%,100%{opacity:0.2;}50%{opacity:1;}}
 
-    /* 流星（改进版） */
+    /* 流星（升级版） */
     .meteor {
       position: absolute;
       width: 120px;
@@ -25,9 +25,9 @@
         rgba(255,255,255,0.2) 60%,
         transparent 100%
       );
-      transform: rotate(45deg);
       filter: drop-shadow(0 0 6px rgba(255,255,255,0.8));
       animation: shoot linear infinite;
+      /* CSS 变量将在 JS 中注入：--start-x, --start-y, --dx, --dy, --angle */
     }
     @keyframes shoot {
       0% {
@@ -39,7 +39,6 @@
         transform: translate(calc(var(--start-x) + var(--dx)), calc(var(--start-y) + var(--dy))) rotate(var(--angle));
       }
     }
-    /* 流星尾部小粒子 */
     .MeteorParticle {
       position: absolute;
       background: rgba(255,255,255,0.8);
@@ -83,37 +82,42 @@
   <script>
     // 星星
     const bg = document.getElementById('background');
-    for(let i=0;i<100;i++){
-      const s=document.createElement('div');
-      s.className='star';
-      s.style.top=Math.random()*100+'vh';
-      s.style.left=Math.random()*100+'vw';
-      s.style.animationDelay=Math.random()*3+'s';
+    for (let i = 0; i < 100; i++) {
+      const s = document.createElement('div');
+      s.className = 'star';
+      s.style.top = Math.random() * 100 + 'vh';
+      s.style.left = Math.random() * 100 + 'vw';
+      s.style.animationDelay = Math.random() * 3 + 's';
       bg.appendChild(s);
     }
 
-    // 流星（改进版）
+    // 升级版流星
+    // 先清除旧的流星
+    bg.querySelectorAll('.meteor').forEach(m => m.remove());
+
     for (let i = 0; i < 30; i++) {
       const m = document.createElement('div');
       m.className = 'meteor';
 
-      // 随机起点
+      // 随机起点：可出现在画面边缘
       const startX = Math.random() * window.innerWidth + 'px';
       const startY = (Math.random() * window.innerHeight * 0.2 - window.innerHeight * 0.1) + 'px';
 
-      // 随机角度 ±30°
-      const angleVal = 45 + (Math.random() * 60 - 30);
-      const angle = angleVal + 'deg';
+      // 随机角度：45°±30°
+      const angleDeg = 45 + (Math.random() * 60 - 30);
+      const angle = angleDeg + 'deg';
 
-      // 随机轨迹长度
+      // 轨迹长度与位移
       const length = 300 + Math.random() * 200;
-      const dx = Math.cos(angleVal * Math.PI / 180) * length + 'px';
-      const dy = Math.sin(angleVal * Math.PI / 180) * length + 'px';
+      const rad = angleDeg * Math.PI / 180;
+      const dx = Math.cos(rad) * length + 'px';
+      const dy = Math.sin(rad) * length + 'px';
 
-      // 随机时长和延迟
+      // 随机时长与延迟
       const duration = (1 + Math.random() * 2).toFixed(2) + 's';
       const delay = (Math.random() * 5).toFixed(2) + 's';
 
+      // 注入 CSS 变量
       m.style.setProperty('--start-x', startX);
       m.style.setProperty('--start-y', startY);
       m.style.setProperty('--angle', angle);
@@ -122,49 +126,104 @@
       m.style.animationDuration = duration;
       m.style.animationDelay = delay;
 
-      // 尾部粒子
+      // 添加尾部粒子
       const particleCount = 3 + Math.floor(Math.random() * 3);
       for (let j = 0; j < particleCount; j++) {
         const p = document.createElement('span');
         p.className = 'MeteorParticle';
-        const size = 2 + Math.random() * 2 + 'px';
-        p.style.width = p.style.height = size;
-        p.style.top = (Math.random() * 4 - 2) + 'px';
+        const size = 2 + Math.random() * 2;
+        p.style.width = p.style.height = size + 'px';
         p.style.left = Math.random() * 120 + 'px';
-        p.style.opacity = Math.random();
+        p.style.top = (Math.random() * 4 - 2) + 'px';
+        p.style.animationDelay = (Math.random() * parseFloat(duration)).toFixed(2) + 's';
         m.appendChild(p);
       }
+
       bg.appendChild(m);
     }
 
-    // 煙花
+    // 煙花代码（保持不变）
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    class Particle { /*...保持不变...*/ }
-    class Firework { /*...保持不变...*/ }
-    const fireworks=[];
-    function animateFireworks(){/*...保持不变...*/}
+    class Particle {
+      constructor(x, y, color) {
+        const angle = Math.random() * 2 * Math.PI;
+        const speed = Math.random() * 2 + 1;
+        this.x = x; this.y = y;
+        this.dx = Math.cos(angle) * speed;
+        this.dy = Math.sin(angle) * speed;
+        this.alpha = 1; this.color = color;
+        this.size = Math.random() * 2 + 2;
+      }
+      update() { this.x += this.dx; this.y += this.dy; this.alpha -= 0.015; }
+      draw() {
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 3);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+    class Firework {
+      constructor() {
+        this.particles = [];
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height * 0.5;
+        const baseHue = Math.floor(Math.random() * 360);
+        for (let i = 0; i < 20; i++) {
+          const color = `hsl(${(baseHue + Math.random()*60) % 360},100%,60%)`;
+          this.particles.push(new Particle(x, y, color));
+        }
+      }
+    }
+    const fireworks = [];
+    function animateFireworks() {
+      requestAnimationFrame(animateFireworks);
+      ctx.fillStyle = 'rgba(0,0,0,0.2)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if (Math.random() < 0.05) fireworks.push(new Firework());
+      fireworks.forEach((fw, i) => {
+        fw.particles.forEach(p => { p.update(); p.draw(); });
+        if (fw.particles.every(p => p.alpha <= 0)) fireworks.splice(i, 1);
+      });
+    }
 
-    // 互動文字
-    const msgs=[
+    // 互動文字 & 音樂（保持不变）
+    const msgs = [
       "SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃de話","嘻嘻嘻嘻😝",
       "統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"
     ];
-    const gift=document.getElementById('giftBox');
-    const hint=document.getElementById('hint');
-    const msgC=document.getElementById('messageContainer');
-    const music=document.getElementById('bgMusic');
+    const gift = document.getElementById('giftBox');
+    const hint = document.getElementById('hint');
+    const msgC = document.getElementById('messageContainer');
+    const music = document.getElementById('bgMusic');
 
-    gift.addEventListener('click', async()=>{
-      document.getElementById('background').innerHTML='';
-      canvas.style.display='block';
+    gift.addEventListener('click', async () => {
+      document.getElementById('background').innerHTML = '';
+      canvas.style.display = 'block';
       animateFireworks();
-      gift.style.display='none';
-      hint.style.display='none';
-      music.play().catch(()=>{});
-      while(1){/*...保持不变...*/}
+      gift.style.display = 'none';
+      hint.style.display = 'none';
+      music.play().catch(() => {});
+      while (1) {
+        for (let i = 0; i < msgs.length; i++) {
+          msgC.innerHTML = '';
+          let div = document.createElement('div');
+          div.className = i === msgs.length - 1 ? 'final' : 'message';
+          msgC.appendChild(div);
+          for (let j = 1; j <= msgs[i].length; j++) {
+            div.textContent = msgs[i].slice(0, j);
+            await new Promise(r => setTimeout(r, 100));
+          }
+          await new Promise(r => setTimeout(r, 1000));
+          div.style.opacity = '0';
+          await new Promise(r => setTimeout(r, 308));
+          div.style.opacity = '1';
+        }
+      }
     });
   </script>
 </body>
