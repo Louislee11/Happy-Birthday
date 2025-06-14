@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>生日快樂噢</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
@@ -11,17 +11,9 @@
     #background { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
     .star { position:absolute; width:2px; height:2px; background:#fff; border-radius:50%; animation:twinkle 2s infinite ease-in-out; }
     @keyframes twinkle {0%,100%{opacity:0.2;}50%{opacity:1;}}
-    .meteor { position:absolute; width:120px; height:2px; background:linear-gradient(to left, #fff, transparent); transform:rotate(45deg); animation:shoot 3s linear infinite; }
+    .meteor { position:absolute; width:120px; height:2px; background:linear-gradient(to left, #fff, transparent); transform:rotate(45deg); animation:shoot 3s linear infinite; cursor: pointer; }
+    .special { background:linear-gradient(to left, #f0f, #0ff); }
     @keyframes shoot { 0%{opacity:1;}100%{opacity:0; transform:translate(500px,500px) rotate(45deg);} }
-
-    .special-meteor {
-      width:100px; height:2px;
-      background:linear-gradient(to left, #ffaaff99, transparent);
-      box-shadow: 0 0 10px #ff88ff88;
-      z-index:5; cursor:pointer;
-      animation:shoot 5s linear forwards, flicker 1s infinite alternate;
-    }
-    @keyframes flicker { from {opacity:0.2;} to {opacity:0.8;} }
 
     #fireworks { position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none; display:none; }
 
@@ -31,36 +23,24 @@
     @keyframes blink {0%,100%{opacity:1;}50%{opacity:0.3;}}
 
     #messageContainer { margin-top:20px; display:flex; flex-direction:column; align-items:center; }
-    .message { color:#fff; font-size:1.8rem; white-space:nowrap; opacity:0; animation:float 4s ease-in-out, glow 2s ease-in-out infinite alternate; }
+    .message {  color: #fff;font-size:1.8rem; white-space:nowrap; opacity:0; animation:float 4s ease-in-out, glow 2s ease-in-out infinite alternate; }
     @keyframes float {0%{transform:translateY(10px);opacity:0;}10%,90%{opacity:1;}100%{transform:translateY(-10px);opacity:0;}}
     @keyframes glow {from{text-shadow:0 0 5px #fff,0 0 10px #ff69b4;}to{text-shadow:0 0 30px #ff66cc,0 0 40px #ffccff;}}
-    .final { color:#fff; font-size:2.2rem; font-weight:bold; animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate; }
+
+    .final {  color: #fff;font-size:2.2rem; font-weight:bold; animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate; }
     @keyframes finalZoom {from{transform:scale(1);}to{transform:scale(1.5);} }
 
-    #videoContainer {
-      position: fixed;
-      top:0; left:0; width:100%; height:100%;
-      background: #000;
-      z-index:999;
-      display:none;
-      justify-content:center;
-      align-items:center;
+    #hiddenPage {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 999; color: #fff;
+      display: none; justify-content: center; align-items: center; text-align: center; flex-direction: column;
     }
-    #confessVideo {
-      width:100%; height:100%;
-      object-fit:contain;
-    }
+    #hiddenPage h1 { font-size: 2.2rem; margin-bottom: 20px; animation: glow 2s ease-in-out infinite alternate; }
+    #hiddenPage button { padding: 10px 20px; font-size: 1.2rem; background: #ff69b4; color: white; border: none; border-radius: 8px; cursor: pointer; }
   </style>
 </head>
 <body>
   <div id="background"></div>
   <canvas id="fireworks"></canvas>
-
-  <!-- 表白影片層 -->
-  <div id="videoContainer">
-    <video id="confessVideo" playsinline webkit-playsinline></video>
-  </div>
-
   <div class="container">
     <div id="giftBox">
       <img src="gift.gif" width="160" alt="禮物盒">
@@ -69,9 +49,13 @@
     <div id="messageContainer"></div>
     <audio id="bgMusic" src="birthday-song.mp3" loop></audio>
   </div>
-
+  <div id="hiddenPage">
+    <h1>偷偷說一句：<br>我其實... 很喜歡你 😳</h1>
+    <button onclick="backToMain()">返回流星畫面</button>
+  </div>
   <script>
     const bg = document.getElementById('background');
+    const hiddenPage = document.getElementById('hiddenPage');
     for(let i=0;i<100;i++){
       const s=document.createElement('div');
       s.className='star';
@@ -81,56 +65,42 @@
       bg.appendChild(s);
     }
 
-    for(let i=0;i<22;i++){
+    // 普通流星
+    for(let i=0;i<19;i++){
       const m=document.createElement('div');
       m.className='meteor';
-      if(Math.random()<0.5){
-        m.style.left='-20%';
-        m.style.top=Math.random()*100+'vh';
-      }else{
-        m.style.top='-20%';
-        m.style.left=Math.random()*100+'vw';
-      }
+      if(Math.random()<0.5){m.style.left='-20%';m.style.top=Math.random()*100+'vh';}else{m.style.top='-20%';m.style.left=Math.random()*100+'vw';}
       m.style.animationDelay=Math.random()*2+'s';
       bg.appendChild(m);
     }
 
-    // 只有一顆特別流星
-    const sm = document.createElement('div');
-    sm.className = 'special-meteor';
-    sm.style.top = Math.random() * 80 + 5 + 'vh';
-    sm.style.left = Math.random() * 80 + 5 + 'vw';
-    sm.addEventListener('click', () => {
-      showVideo();
-    });
-    bg.appendChild(sm);
-
-    // 播放影片
-    function showVideo() {
-      const vc = document.getElementById('videoContainer');
-      const video = document.getElementById('confessVideo');
-      video.src = "https://www.w3schools.com/html/mov_bbb.mp4"; // 替換為你自己的表白影片
-      vc.style.display = 'flex';
-      video.play();
-
-      video.onended = () => {
-        video.pause();
-        video.src = "";
-        vc.style.display = 'none';
-      };
-
-      // 自動全螢幕
-      const requestFullScreen = video.requestFullscreen || video.webkitRequestFullscreen || video.msRequestFullscreen;
-      if (requestFullScreen) {
-        requestFullScreen.call(video);
-      }
+    // 特別可點擊的流星
+    for(let i=0;i<3;i++){
+      const sm=document.createElement('div');
+      sm.className='meteor special';
+      sm.style.top=Math.random()*80+'vh';
+      sm.style.left=Math.random()*80+'vw';
+      sm.style.animationDelay=Math.random()*2+'s';
+      sm.addEventListener('click', e => {
+        e.stopPropagation();
+        document.querySelector('.container').style.display = 'none';
+        document.getElementById('fireworks').style.display = 'none';
+        hiddenPage.style.display = 'flex';
+      });
+      bg.appendChild(sm);
     }
 
-    // 煙火動畫
+    function backToMain() {
+      hiddenPage.style.display = 'none';
+      document.querySelector('.container').style.display = 'flex';
+      document.getElementById('fireworks').style.display = 'block';
+    }
+
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+
     class Particle {
       constructor(x, y, color) {
         const angle = Math.random() * 2 * Math.PI;
@@ -143,16 +113,12 @@
         this.color = color;
         this.size = Math.random() * 2 + 2;
       }
-      update() {
-        this.x += this.dx;
-        this.y += this.dy;
-        this.alpha -= 0.015;
-      }
+      update() { this.x += this.dx; this.y += this.dy; this.alpha -= 0.015; }
       draw() {
         ctx.globalAlpha = this.alpha;
         ctx.fillStyle = this.color;
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 3);
         ctx.fill();
         ctx.globalAlpha = 1;
       }
@@ -176,6 +142,7 @@
       requestAnimationFrame(animateFireworks);
       ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+
       if (Math.random() < 0.05) fireworks.push(new Firework());
       fireworks.forEach((fw, i) => {
         fw.particles.forEach(p => { p.update(); p.draw(); });
@@ -183,11 +150,7 @@
       });
     }
 
-    // 文字顯示
-    const msgs = [
-      "SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃de話","嘻嘻嘻嘻😝",
-      "統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"
-    ];
+    const msgs = ["SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃de話","嘻嘻嘻嘻😝","統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"];
     const gift = document.getElementById('giftBox');
     const hint = document.getElementById('hint');
     const msgC = document.getElementById('messageContainer');
