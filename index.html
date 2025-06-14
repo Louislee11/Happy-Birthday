@@ -28,48 +28,45 @@
     .meteor {
       position: absolute;
       pointer-events: none;
+      width: 120px; /* 包含 head + tail */
+      height: 10px;
+      display: flex;
+      align-items: center;
+      transform: rotate(45deg);
       animation: shoot 3s linear infinite;
     }
-
+    
     .meteor-head {
-      position: absolute;
       width: 10px;
       height: 10px;
       border-radius: 50%;
       background: radial-gradient(circle, #fff, pink, transparent);
       box-shadow: 0 0 20px rgba(255, 200, 255, 0.8);
+      flex-shrink: 0;
     }
-
+    
     .meteor-tail {
-      position: absolute;
-      top: 0;
-      left: -100px;
-      width: 120px;
+      flex-grow: 1;
       height: 3px;
+      margin-left: -2px;
       background: linear-gradient(to left, pink, violet, transparent);
       filter: blur(2px);
-      transform: rotate(45deg);
     }
-
-    .meteor-particle {
-      position: absolute;
-      width: 4px;
-      height: 4px;
-      background: white;
-      border-radius: 50%;
-      opacity: 0.8;
-      animation: blink 1.2s infinite ease-in-out;
-    }
-
     @keyframes blink {
-      0%, 100% { opacity: 0.2; transform: translateY(0); }
-      50% { opacity: 1; transform: translateY(-5px); }
+        0%, 100% { opacity: 0.2; transform: translateY(0); }
+        50% { opacity: 1; transform: translateY(-5px); }
+      }
+    @keyframes shoot {
+      0% {
+        transform: translate(0, 0) rotate(45deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(600px, 600px) rotate(45deg);
+        opacity: 0;
+      }
     }
 
-    @keyframes shoot {
-      0% { transform: translate(0, 0) rotate(45deg); opacity: 1; }
-      100% { transform: translate(600px, 600px) rotate(45deg); opacity: 0; }
-    }
 
     /* 其他樣式（略） */
     #fireworks { position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none; display:none; }
@@ -158,8 +155,8 @@
       m.className = 'meteor';
       const x = Math.random() * window.innerWidth * 0.8;
       const y = Math.random() * window.innerHeight * 0.5;
-      m.style.left = `${x}px`;
-      m.style.top = `${y}px`;
+      m.style.left = ${x}px;
+      m.style.top = ${y}px;
       m.style.animationDelay = Math.random() * 2 + 's';
 
       const head = document.createElement('div');
@@ -168,7 +165,7 @@
 
       const tail = document.createElement('div');
       tail.className = 'meteor-tail';
-      tail.style.background = `linear-gradient(to left, hsl(${Math.random()*360}, 100%, 80%), transparent)`;
+      tail.style.background = linear-gradient(to left, hsl(${Math.random()*360}, 100%, 80%), transparent);
       m.appendChild(tail);
 
       // 添加閃爍粒子
@@ -233,7 +230,7 @@
         const y = Math.random() * canvas.height * 0.5;
         const baseHue = Math.floor(Math.random() * 360);
         for (let i = 0; i < 20; i++) {
-          const color = `hsl(${(baseHue + Math.random()*60) % 360}, 100%, 60%)`;
+          const color = hsl(${(baseHue + Math.random()*60) % 360}, 100%, 60%);
           this.particles.push(new Particle(x, y, color));
         }
       }
