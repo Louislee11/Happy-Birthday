@@ -11,9 +11,10 @@
     #background { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
     .star { position:absolute; width:2px; height:2px; background:#fff; border-radius:50%; animation:twinkle 2s infinite ease-in-out; }
     @keyframes twinkle {0%,100%{opacity:0.2;}50%{opacity:1;}}
-    .meteor { position:absolute; width:120px; height:2px; background:linear-gradient(to left, #fff, transparent); transform:rotate(45deg); animation:shoot 3s linear infinite; cursor: pointer; }
-    .special { background:linear-gradient(to left, #f0f, #0ff); }
+    .meteor { position:absolute; width:120px; height:2px; background:linear-gradient(to left, #fff, transparent); transform:rotate(45deg); animation:shoot 3s linear infinite; }
     @keyframes shoot { 0%{opacity:1;}100%{opacity:0; transform:translate(500px,500px) rotate(45deg);} }
+
+    .special-meteor { position:absolute; width:130px; height:3px; background:linear-gradient(to left, rgba(255,255,255,0.8), transparent); transform:rotate(45deg); animation:shoot 3.5s linear infinite; box-shadow: 0 0 6px 2px rgba(255,255,255,0.3); cursor: pointer; }
 
     #fireworks { position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none; display:none; }
 
@@ -30,12 +31,18 @@
     .final {  color: #fff;font-size:2.2rem; font-weight:bold; animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate; }
     @keyframes finalZoom {from{transform:scale(1);}to{transform:scale(1.5);} }
 
-    #hiddenPage {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 999; color: #fff;
-      display: none; justify-content: center; align-items: center; text-align: center; flex-direction: column;
+    #confessionVideo {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 999;
+      background: #000;
+      display: none;
     }
-    #hiddenPage h1 { font-size: 2.2rem; margin-bottom: 20px; animation: glow 2s ease-in-out infinite alternate; }
-    #hiddenPage button { padding: 10px 20px; font-size: 1.2rem; background: #ff69b4; color: white; border: none; border-radius: 8px; cursor: pointer; }
+    #confessionVideo video {
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+    }
   </style>
 </head>
 <body>
@@ -49,53 +56,30 @@
     <div id="messageContainer"></div>
     <audio id="bgMusic" src="birthday-song.mp3" loop></audio>
   </div>
-  <div id="hiddenPage">
-    <h1>偷偷說一句：<br>我其實... 很喜歡你 😳</h1>
-    <button onclick="backToMain()">返回流星畫面</button>
+  <div id="confessionVideo">
+    <video src="https://www.w3schools.com/html/mov_bbb.mp4" autoplay controls playsinline></video>
   </div>
+
   <script>
     const bg = document.getElementById('background');
-    const hiddenPage = document.getElementById('hiddenPage');
-    for(let i=0;i<100;i++){
-      const s=document.createElement('div');
-      s.className='star';
-      s.style.top=Math.random()*100+'vh';
-      s.style.left=Math.random()*100+'vw';
-      s.style.animationDelay=Math.random()*3+'s';
-      bg.appendChild(s);
-    }
+    for(let i=0;i<100;i++){const s=document.createElement('div');s.className='star';s.style.top=Math.random()*100+'vh';s.style.left=Math.random()*100+'vw';s.style.animationDelay=Math.random()*3+'s';bg.appendChild(s);}    
+    for(let i=0;i<22;i++){const m=document.createElement('div');m.className='meteor';if(Math.random()<0.5){m.style.left='-20%';m.style.top=Math.random()*100+'vh';}else{m.style.top='-20%';m.style.left=Math.random()*100+'vw';}m.style.animationDelay=Math.random()*2+'s';bg.appendChild(m);}    
 
-    // 普通流星
-    for(let i=0;i<19;i++){
-      const m=document.createElement('div');
-      m.className='meteor';
-      if(Math.random()<0.5){m.style.left='-20%';m.style.top=Math.random()*100+'vh';}else{m.style.top='-20%';m.style.left=Math.random()*100+'vw';}
-      m.style.animationDelay=Math.random()*2+'s';
-      bg.appendChild(m);
-    }
+    // 特別流星
+    const special = document.createElement('div');
+    special.className = 'special-meteor';
+    special.style.left = Math.random() * 80 + '%';
+    special.style.top = Math.random() * 40 + '%';
+    bg.appendChild(special);
+    special.addEventListener('click', () => {
+      document.getElementById('confessionVideo').style.display = 'block';
+      document.querySelector('#confessionVideo video').play();
+    });
+    document.querySelector('#confessionVideo video').addEventListener('ended', () => {
+      document.getElementById('confessionVideo').style.display = 'none';
+    });
 
-    // 特別可點擊的流星
-    for(let i=0;i<3;i++){
-      const sm=document.createElement('div');
-      sm.className='meteor special';
-      sm.style.top=Math.random()*80+'vh';
-      sm.style.left=Math.random()*80+'vw';
-      sm.style.animationDelay=Math.random()*2+'s';
-      sm.addEventListener('click', e => {
-        e.stopPropagation();
-        document.querySelector('.container').style.display = 'none';
-        document.getElementById('fireworks').style.display = 'none';
-        hiddenPage.style.display = 'flex';
-      });
-      bg.appendChild(sm);
-    }
-
-    function backToMain() {
-      hiddenPage.style.display = 'none';
-      document.querySelector('.container').style.display = 'flex';
-      document.getElementById('fireworks').style.display = 'block';
-    }
-
+    // 煙火動畫
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
@@ -113,7 +97,11 @@
         this.color = color;
         this.size = Math.random() * 2 + 2;
       }
-      update() { this.x += this.dx; this.y += this.dy; this.alpha -= 0.015; }
+      update() {
+        this.x += this.dx;
+        this.y += this.dy;
+        this.alpha -= 0.015;
+      }
       draw() {
         ctx.globalAlpha = this.alpha;
         ctx.fillStyle = this.color;
@@ -145,12 +133,18 @@
 
       if (Math.random() < 0.05) fireworks.push(new Firework());
       fireworks.forEach((fw, i) => {
-        fw.particles.forEach(p => { p.update(); p.draw(); });
+        fw.particles.forEach(p => {
+          p.update();
+          p.draw();
+        });
         if (fw.particles.every(p => p.alpha <= 0)) fireworks.splice(i, 1);
       });
     }
 
-    const msgs = ["SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃de話","嘻嘻嘻嘻😝","統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"];
+    const msgs = [
+      "SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃de話","嘻嘻嘻嘻😝",
+      "統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"
+    ];
     const gift = document.getElementById('giftBox');
     const hint = document.getElementById('hint');
     const msgC = document.getElementById('messageContainer');
