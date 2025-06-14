@@ -9,87 +9,122 @@
     html, body { width:100%; height:100%; overflow:hidden; background:#000; font-family:'Segoe UI',sans-serif; }
 
     #background { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
-    .star { position:absolute; width:2px; height:2px; background:#fff; border-radius:50%; animation:twinkle 2s infinite ease-in-out; }
-    @keyframes twinkle {0%,100%{opacity:0.2;}50%{opacity:1;}}
 
-    .meteor {
-      position: absolute;
-      width: 150px;
-      height: 4px;
-      pointer-events: none;
-      transform: rotate(45deg); /* ✅ 固定方向 */
-      animation: shoot45 3s linear infinite;
+    /* ✨ 星星 */
+    .star {
+      position:absolute;
+      width:2px;
+      height:2px;
+      background:#fff;
+      border-radius:50%;
+      animation:twinkle 2s infinite ease-in-out;
+    }
+    @keyframes twinkle {
+      0%,100% { opacity:0.2; }
+      50% { opacity:1; }
     }
 
-    .meteor-body {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
+    /* 💖 流星（頭尾分離 + 漂浮粒子） */
+    .meteor {
+      position: absolute;
+      pointer-events: none;
+      animation: shoot 3s linear infinite;
     }
 
     .meteor-head {
-      width: 8px;
-      height: 8px;
+      position: absolute;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
-      background: white;
-      box-shadow: 0 0 12px rgba(255, 200, 255, 0.8);
-      z-index: 2;
+      background: radial-gradient(circle, #fff, pink, transparent);
+      box-shadow: 0 0 20px rgba(255, 200, 255, 0.8);
     }
 
     .meteor-tail {
-      flex-grow: 1;
-      height: 2px;
-      margin-left: 4px;
-      background: linear-gradient(to left, pink, violet, transparent);
-      border-radius: 2px;
-    }
-
-    .meteor-particles {
       position: absolute;
-      display: flex;
-      gap: 4px;
-      left: 20px;
-      z-index: 0;
-    }
-
-    .meteor-particles span {
-      width: 3px;
+      top: 0;
+      left: -100px;
+      width: 120px;
       height: 3px;
-      background: rgba(255, 255, 255, 0.6);
+      background: linear-gradient(to left, pink, violet, transparent);
+      filter: blur(2px);
+      transform: rotate(45deg);
+    }
+
+    .meteor-particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: white;
       border-radius: 50%;
-      animation: twinkle 1.5s infinite;
+      opacity: 0.8;
+      animation: blink 1.2s infinite ease-in-out;
     }
 
-    @keyframes shoot45 {
-      0% {
-        transform: translate(0, 0) rotate(45deg);
-        opacity: 1;
-      }
-      100% {
-        transform: translate(800px, 800px) rotate(45deg);
-        opacity: 0;
-      }
+    @keyframes blink {
+      0%, 100% { opacity: 0.2; transform: translateY(0); }
+      50% { opacity: 1; transform: translateY(-5px); }
     }
 
-    /* 煙花 Canvas */
+    @keyframes shoot {
+      0% { transform: translate(0, 0) rotate(45deg); opacity: 1; }
+      100% { transform: translate(600px, 600px) rotate(45deg); opacity: 0; }
+    }
+
+    /* 其他樣式（略） */
     #fireworks { position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none; display:none; }
 
-    /* 互動內容 */
-    .container { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:2; display:flex; flex-direction:column; align-items:center; pointer-events:auto; }
+    .container {
+      position:fixed; top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      z-index:2; display:flex;
+      flex-direction:column; align-items:center; pointer-events:auto;
+    }
     #giftBox { cursor:pointer; }
-    #hint { margin-top:8px; font-size:1.2rem; color:#ffeb3b; animation:blink 1.5s infinite; pointer-events:none; }
-    @keyframes blink {0%,100%{opacity:1;}50%{opacity:0.3;}}
+    #hint {
+      margin-top:8px;
+      font-size:1.2rem;
+      color:#ffeb3b;
+      animation:blink 1.5s infinite;
+      pointer-events:none;
+    }
 
-    #messageContainer { margin-top:20px; display:flex; flex-direction:column; align-items:center; }
-    .message {  color: #fff;font-size:1.8rem; white-space:nowrap; opacity:0; animation:float 4s ease-in-out, glow 2s ease-in-out infinite alternate; }
-    @keyframes float {0%{transform:translateY(10px);opacity:0;}10%,90%{opacity:1;}100%{transform:translateY(-10px);opacity:0;}}
+    #messageContainer {
+      margin-top:20px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
 
-    @keyframes glow {from{text-shadow:0 0 5px #fff,0 0 10px #ff69b4;}to{text-shadow:0 0 30px #ff66cc,0 0 40px #ffccff;}}
+    .message {
+      color: #fff;
+      font-size:1.8rem;
+      white-space:nowrap;
+      opacity:0;
+      animation:float 4s ease-in-out, glow 2s ease-in-out infinite alternate;
+    }
 
-    .final {  color: #fff;font-size:2.2rem; font-weight:bold; animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate; }
-    @keyframes finalZoom {from{transform:scale(1);}to{transform:scale(1.5);} }
+    @keyframes float {
+      0%{transform:translateY(10px);opacity:0;}
+      10%,90%{opacity:1;}
+      100%{transform:translateY(-10px);opacity:0;}
+    }
+
+    @keyframes glow {
+      from { text-shadow:0 0 5px #fff,0 0 10px #ff69b4; }
+      to { text-shadow:0 0 30px #ff66cc,0 0 40px #ffccff; }
+    }
+
+    .final {
+      color: #fff;
+      font-size:2.2rem;
+      font-weight:bold;
+      animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate;
+    }
+    @keyframes finalZoom {
+      from { transform:scale(1); }
+      to { transform:scale(1.5); }
+    }
   </style>
 </head>
 <body>
@@ -105,67 +140,60 @@
   </div>
 
   <script>
-    // 星星
     const bg = document.getElementById('background');
+
+    // 🌟 星星
     for(let i=0;i<100;i++){
-      const s=document.createElement('div');
-      s.className='star';
-      s.style.top=Math.random()*100+'vh';
-      s.style.left=Math.random()*100+'vw';
-      s.style.animationDelay=Math.random()*3+'s';
+      const s = document.createElement('div');
+      s.className = 'star';
+      s.style.top = Math.random()*100 + 'vh';
+      s.style.left = Math.random()*100 + 'vw';
+      s.style.animationDelay = Math.random()*3 + 's';
       bg.appendChild(s);
     }
 
-    // 🌈 粉嫩幻彩流星
-    const pastelColors = [
-      ['#ffc0cb', '#ffb6c1', '#ff69b4'], // 粉紅
-      ['#dda0dd', '#ee82ee', '#da70d6'], // 紫色
-      ['#87cefa', '#b0e0e6', '#e0ffff'], // 水藍
-      ['#ffe4e1', '#ffc1cc', '#ffdde1'], // 淺粉
-      ['#f3d1f4', '#f8c6f8', '#fff0f5'], // 淡紫
-    ];
-    
-  for(let i=0;i<16;i++){
-    const meteor = document.createElement('div');
-    meteor.className = 'meteor';
+    // 🌠 流星生成
+    function createMeteor() {
+      const m = document.createElement('div');
+      m.className = 'meteor';
+      const x = Math.random() * window.innerWidth * 0.8;
+      const y = Math.random() * window.innerHeight * 0.5;
+      m.style.left = `${x}px`;
+      m.style.top = `${y}px`;
+      m.style.animationDelay = Math.random() * 2 + 's';
 
-    const body = document.createElement('div');
-    body.className = 'meteor-body';
+      const head = document.createElement('div');
+      head.className = 'meteor-head';
+      m.appendChild(head);
 
-    const head = document.createElement('div');
-    head.className = 'meteor-head';
+      const tail = document.createElement('div');
+      tail.className = 'meteor-tail';
+      tail.style.background = `linear-gradient(to left, hsl(${Math.random()*360}, 100%, 80%), transparent)`;
+      m.appendChild(tail);
 
-    const tail = document.createElement('div');
-    tail.className = 'meteor-tail';
+      // 添加閃爍粒子
+      for (let i = 0; i < 3; i++) {
+        const p = document.createElement('div');
+        p.className = 'meteor-particle';
+        p.style.top = (Math.random()*10 - 5) + 'px';
+        p.style.left = (-Math.random()*60) + 'px';
+        p.style.animationDelay = Math.random() + 's';
+        m.appendChild(p);
+      }
 
-    const colors = pastelColors[Math.floor(Math.random()*pastelColors.length)];
-    tail.style.background = `linear-gradient(to left, ${colors.join(',')})`;
-    head.style.background = colors[0];
-    head.style.boxShadow = `0 0 12px ${colors[1]}`;
+      bg.appendChild(m);
 
-    const particles = document.createElement('div');
-    particles.className = 'meteor-particles';
-    for (let j = 0; j < 4; j++) {
-      const dot = document.createElement('span');
-      particles.appendChild(dot);
+      setTimeout(() => bg.removeChild(m), 3500);
     }
 
-    body.appendChild(head);
-    body.appendChild(tail);
-    meteor.appendChild(body);
-    meteor.appendChild(particles);
+    for(let i=0; i<22; i++) {
+      setTimeout(() => {
+        setInterval(createMeteor, 4000 + Math.random() * 2000);
+        createMeteor();
+      }, i * 300);
+    }
 
-    // ✅ 固定左上起飛，隨機偏移
-    const offsetX = Math.random() * 200 - 100;
-    const offsetY = Math.random() * 200 - 100;
-    meteor.style.left = `${offsetX}px`;
-    meteor.style.top = `${offsetY}px`;
-    meteor.style.animationDelay = Math.random() * 3 + 's';
-
-    document.getElementById('background').appendChild(meteor);
-  }
-
-    // 煙花邏輯（不變）
+    // ✨ 煙花動畫、訊息播放（保留原本）
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
@@ -216,7 +244,6 @@
       requestAnimationFrame(animateFireworks);
       ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-
       if (Math.random() < 0.05) fireworks.push(new Firework());
       fireworks.forEach((fw, i) => {
         fw.particles.forEach(p => {
@@ -227,7 +254,6 @@
       });
     }
 
-    // 文字與音樂互動
     const msgs = [
       "SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃de話","嘻嘻嘻嘻😝",
       "統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"
