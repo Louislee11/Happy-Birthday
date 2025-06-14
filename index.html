@@ -28,31 +28,33 @@
     .meteor {
       position: absolute;
       pointer-events: none;
-      width: 120px;
+      width: 160px;
       height: 10px;
-      display: flex;
-      align-items: center;
       transform: rotate(45deg);
       animation: shoot 3s linear infinite;
     }
-
+  
     .meteor-head {
+      position: absolute;
       width: 10px;
       height: 10px;
       border-radius: 50%;
       background: radial-gradient(circle, #fff, pink, transparent);
       box-shadow: 0 0 20px rgba(255, 200, 255, 0.8);
-      flex-shrink: 0;
+      left: 0;
+      top: 0;
     }
-
+  
     .meteor-tail {
-      flex-grow: 1;
-      height: 3px;
-      margin-left: -2px;
+      position: absolute;
+      left: 0;
+      top: 4px;
+      width: 120px;
+      height: 2px;
       background: linear-gradient(to left, pink, violet, transparent);
       filter: blur(2px);
     }
-
+  
     .meteor-particle {
       position: absolute;
       width: 4px;
@@ -62,15 +64,16 @@
       opacity: 0.8;
       animation: blink 1.2s infinite ease-in-out;
     }
-
-    @keyframes blink {
-      0%, 100% { opacity: 0.2; transform: translateY(0); }
-      50% { opacity: 1; transform: translateY(-5px); }
-    }
-
+  
     @keyframes shoot {
-      0% { transform: translate(0, 0) rotate(45deg); opacity: 1; }
-      100% { transform: translate(600px, 600px) rotate(45deg); opacity: 0; }
+      0% {
+        transform: translate(0, 0) rotate(45deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(600px, 600px) rotate(45deg);
+        opacity: 0;
+      }
     }
 
     #fireworks { position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none; display:none; }
@@ -155,37 +158,34 @@
 
     // 🌠 流星生成
     function createMeteor() {
-      const m = document.createElement('div');
-      m.className = 'meteor';
-      const x = Math.random() * window.innerWidth * 0.8;
-      const y = Math.random() * window.innerHeight * 0.5;
-      m.style.left = `${x}px`;
-      m.style.top = `${y}px`;
-      m.style.animationDelay = Math.random() * 2 + 's';
+    const m = document.createElement('div');
+    m.className = 'meteor';
+    const x = Math.random() * window.innerWidth * 0.8;
+    const y = Math.random() * window.innerHeight * 0.5;
+    m.style.left = `${x}px`;
+    m.style.top = `${y}px`;
+    m.style.animationDelay = Math.random() * 2 + 's';
 
-      const head = document.createElement('div');
-      head.className = 'meteor-head';
-      m.appendChild(head);
+    const head = document.createElement('div');
+    head.className = 'meteor-head';
+    m.appendChild(head);
 
-      const tail = document.createElement('div');
-      tail.className = 'meteor-tail';
-      tail.style.background = `linear-gradient(to left, hsl(${Math.random()*360}, 100%, 80%), transparent)`;
-      m.appendChild(tail);
+    const tail = document.createElement('div');
+    tail.className = 'meteor-tail';
+    tail.style.background = `linear-gradient(to left, hsl(${Math.random()*360}, 100%, 80%), transparent)`;
+    m.appendChild(tail);
 
-      // 添加閃爍粒子
-      for (let i = 0; i < 3; i++) {
-        const p = document.createElement('div');
-        p.className = 'meteor-particle';
-        p.style.top = (Math.random()*10 - 5) + 'px';
-        p.style.left = (-Math.random()*60) + 'px';
-        p.style.animationDelay = Math.random() + 's';
-        m.appendChild(p);
-      }
-
-      bg.appendChild(m);
-
-      setTimeout(() => bg.removeChild(m), 3500);
+    for (let i = 0; i < 3; i++) {
+      const p = document.createElement('div');
+      p.className = 'meteor-particle';
+      p.style.top = (Math.random()*10 - 5) + 'px';
+      p.style.left = (Math.random()*-60) + 'px';
+      p.style.animationDelay = Math.random() + 's';
+      m.appendChild(p);
     }
+
+    document.getElementById('background').appendChild(m);
+    setTimeout(() => m.remove(), 3500)
 
     for(let i=0; i<22; i++) {
       setTimeout(() => {
