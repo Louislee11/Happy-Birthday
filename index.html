@@ -8,32 +8,100 @@
     * { margin:0; padding:0; box-sizing:border-box; }
     html, body { width:100%; height:100%; overflow:hidden; background:#000; font-family:'Segoe UI',sans-serif; }
 
-    #background { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:auto; }
+    #background { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
     .star { position:absolute; width:2px; height:2px; background:#fff; border-radius:50%; animation:twinkle 2s infinite ease-in-out; }
     @keyframes twinkle {0%,100%{opacity:0.2;}50%{opacity:1;}}
-    .meteor { position:absolute; width:120px; height:2px; background:linear-gradient(to left, #fff, transparent); transform:rotate(45deg); animation:shoot 3s linear infinite; }
-    @keyframes shoot { 0%{opacity:1;}100%{opacity:0; transform:translate(500px,500px) rotate(45deg);} }
+
+    .meteor {
+      position:absolute; width:120px; height:2px;
+      background:linear-gradient(to left, #fff, transparent);
+      transform:rotate(45deg); animation:shoot 3s linear infinite;
+    }
+    .secret-meteor {
+      position:absolute; width:140px; height:3px;
+      background:linear-gradient(to left, hotpink, transparent);
+      transform:rotate(45deg);
+      animation:secretShoot 6s linear infinite;
+      cursor: pointer;
+      z-index: 3;
+      pointer-events: auto;
+      box-shadow: 0 0 12px hotpink;
+    }
+    @keyframes shoot {
+      0%{opacity:1;}
+      100%{opacity:0; transform:translate(500px,500px) rotate(45deg);}
+    }
+    @keyframes secretShoot {
+      0%{opacity:1;}
+      100%{opacity:0; transform:translate(700px,700px) rotate(45deg);}
+    }
 
     #fireworks { position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none; display:none; }
 
-    .container { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:2; display:flex; flex-direction:column; align-items:center; pointer-events:auto; }
+    .container {
+      position:fixed; top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      z-index:2; display:flex;
+      flex-direction:column; align-items:center; pointer-events:auto;
+    }
     #giftBox { cursor:pointer; }
-    #hint { margin-top:8px; font-size:1.2rem; color:#ffeb3b; animation:blink 1.5s infinite; pointer-events:none; }
+    #hint {
+      margin-top:8px; font-size:1.2rem;
+      color:#ffeb3b; animation:blink 1.5s infinite; pointer-events:none;
+    }
     @keyframes blink {0%,100%{opacity:1;}50%{opacity:0.3;}}
 
-    #messageContainer { margin-top:20px; display:flex; flex-direction:column; align-items:center; }
-    .message {  color: #fff;font-size:1.8rem; white-space:nowrap; opacity:0; animation:float 4s ease-in-out, glow 2s ease-in-out infinite alternate; }
-    @keyframes float {0%{transform:translateY(10px);opacity:0;}10%,90%{opacity:1;}100%{transform:translateY(-10px);opacity:0;}}
+    #messageContainer {
+      margin-top:20px; display:flex; flex-direction:column; align-items:center;
+    }
+    .message {
+      color: #fff;font-size:1.8rem; white-space:nowrap;
+      opacity:0;
+      animation:float 4s ease-in-out, glow 2s ease-in-out infinite alternate;
+    }
+    @keyframes float {
+      0%{transform:translateY(10px);opacity:0;}
+      10%,90%{opacity:1;}
+      100%{transform:translateY(-10px);opacity:0;}
+    }
+    @keyframes glow {
+      from{text-shadow:0 0 5px #fff,0 0 10px #ff69b4;}
+      to{text-shadow:0 0 30px #ff66cc,0 0 40px #ffccff;}
+    }
 
-    @keyframes glow {from{text-shadow:0 0 5px #fff,0 0 10px #ff69b4;}to{text-shadow:0 0 30px #ff66cc,0 0 40px #ffccff;}}
-
-    .final {  color: #fff;font-size:2.2rem; font-weight:bold; animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate; }
+    .final {
+      color: #fff; font-size:2.2rem;
+      font-weight:bold;
+      animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate;
+    }
     @keyframes finalZoom {from{transform:scale(1);}to{transform:scale(1.5);} }
+
+    /* 隱藏版表白區塊 */
+    #secretMessage {
+      position:fixed; bottom:40px; left:50%;
+      transform:translateX(-50%);
+      background:rgba(255,255,255,0.1);
+      padding:20px 30px;
+      border-radius:12px;
+      color:hotpink;
+      font-size:1.6rem;
+      font-weight:bold;
+      text-align:center;
+      box-shadow:0 0 20px hotpink;
+      z-index: 10;
+      display:none;
+      animation: fadeIn 1s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
   </style>
 </head>
 <body>
   <div id="background"></div>
   <canvas id="fireworks"></canvas>
+
   <div class="container">
     <div id="giftBox">
       <img src="gift.gif" width="160" alt="禮物盒">
@@ -42,65 +110,46 @@
     <div id="messageContainer"></div>
     <audio id="bgMusic" src="birthday-song.mp3" loop></audio>
   </div>
+
+  <div id="secretMessage">偷偷說：<br>其實我一直很喜歡你💖<br>只是沒說出口。</div>
+
   <script>
     const bg = document.getElementById('background');
-    // 星星
-    for (let i = 0; i < 100; i++) {
-      const s = document.createElement('div');
-      s.className = 'star';
-      s.style.top = Math.random() * 100 + 'vh';
-      s.style.left = Math.random() * 100 + 'vw';
-      s.style.animationDelay = Math.random() * 3 + 's';
+    // 普通星星
+    for(let i=0;i<100;i++){
+      const s=document.createElement('div');
+      s.className='star';
+      s.style.top=Math.random()*100+'vh';
+      s.style.left=Math.random()*100+'vw';
+      s.style.animationDelay=Math.random()*3+'s';
       bg.appendChild(s);
     }
 
     // 普通流星
-    for (let i = 0; i < 22; i++) {
-      const m = document.createElement('div');
-      m.className = 'meteor';
-      if (Math.random() < 0.5) {
-        m.style.left = '-20%';
-        m.style.top = Math.random() * 100 + 'vh';
-      } else {
-        m.style.top = '-20%';
-        m.style.left = Math.random() * 100 + 'vw';
+    for(let i=0;i<22;i++){
+      const m=document.createElement('div');
+      m.className='meteor';
+      if(Math.random()<0.5){
+        m.style.left='-20%';
+        m.style.top=Math.random()*100+'vh';
+      }else{
+        m.style.top='-20%';
+        m.style.left=Math.random()*100+'vw';
       }
-      m.style.animationDelay = Math.random() * 2 + 's';
+      m.style.animationDelay=Math.random()*2+'s';
       bg.appendChild(m);
     }
 
-    // 👉 隱藏彩蛋流星
-    const secretMessages = [
-      "嘿嘿，其實我還準備了一句話...",
-      "生日快樂 ❤️ 我真的很喜歡你。",
-      "如果哪天心情不好，就來看看這裡吧 🥺"
-    ];
-
-    for (let i = 0; i < 3; i++) {
+    // 隱藏版流星（5顆）
+    for(let i=0;i<5;i++){
       const sm = document.createElement('div');
-      sm.className = 'meteor';
-      sm.style.background = 'linear-gradient(to left, #ff99cc, transparent)';
-      sm.style.width = '150px';
-      sm.style.height = '3px';
-      sm.style.zIndex = '10';
-      sm.style.cursor = 'pointer';
-      sm.style.filter = 'drop-shadow(0 0 6px #ff66cc)';
-      if (Math.random() < 0.5) {
-        sm.style.left = '-20%';
-        sm.style.top = Math.random() * 100 + 'vh';
-      } else {
-        sm.style.top = '-20%';
-        sm.style.left = Math.random() * 100 + 'vw';
-      }
-      sm.style.animation = 'shoot 4s linear infinite';
+      sm.className = 'secret-meteor';
+      sm.style.top = Math.random() * 80 + 'vh';
+      sm.style.left = Math.random() * 80 + 'vw';
       sm.style.animationDelay = Math.random() * 5 + 's';
-
-      sm.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const msg = secretMessages[Math.floor(Math.random() * secretMessages.length)];
-        alert(msg);
+      sm.addEventListener('click', () => {
+        document.getElementById('secretMessage').style.display = 'block';
       });
-
       bg.appendChild(sm);
     }
 
@@ -166,7 +215,7 @@
       });
     }
 
-    // 點禮物顯示文字與煙火
+    // 互動文字
     const msgs = [
       "SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃de話","嘻嘻嘻嘻😝",
       "統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"
