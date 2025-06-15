@@ -15,7 +15,7 @@
     @keyframes shoot { 0%{opacity:1;}100%{opacity:0; transform:translate(500px,500px) rotate(45deg);} }
 
     .special-meteor {
-      background: radial-gradient(circle, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0) 120%);
+      background: radial-gradient(circle, rgba(255,255,255,0.25) 40%, rgba(255,255,255,0) 120%);
       width: 20px; height: 20px; border-radius: 50%;
       position: absolute;
       box-shadow: 0 0 5px rgba(255,255,255,0.3);
@@ -29,14 +29,28 @@
 
     #secretScreen {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: #000; z-index: 9999; color: white;
-      justify-content: center; align-items: center; flex-direction: column;
+      background: rgba(0,0,0,0.9); z-index: 9999; color: white;
+      justify-content: center; align-items: center; flex-direction: column; padding: 20px;
     }
-    #secretVideo {
-      max-width: 100%;
-      max-height: 100%;
-      border: 4px solid #fff;
-      border-radius: 10px;
+    #secretText {
+      max-width: 90%;
+      font-size: 1.8rem;
+      text-align: center;
+      line-height: 1.8;
+      animation: fadeIn 2s ease-in-out;
+    }
+    #closeSecret {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #fff;
+      color: #000;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
     }
 
     #fireworks { position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none; display:none; }
@@ -58,9 +72,15 @@
 <body>
   <div id="background"></div>
 
-  <!-- 隱藏影片播放畫面 -->
+  <!-- 隱藏文字畫面 -->
   <div id="secretScreen">
-    <video id="secretVideo" controls playsinline webkit-playsinline></video>
+    <div id="secretText">
+      芳辰之日，遙寄寸心。<br/>
+      願君歲歲無虞，長安長樂；<br/>
+      昭昭如願，年年安瀾。<br/>
+      早得良人，共賞春風。
+    </div>
+    <div id="closeSecret">回到主畫面</div>
   </div>
 
   <canvas id="fireworks"></canvas>
@@ -74,7 +94,6 @@
   </div>
 
   <script>
-    // 星星與流星背景
     const bg = document.getElementById('background');
     for(let i=0;i<100;i++){
       const s=document.createElement('div');
@@ -98,7 +117,7 @@
       bg.appendChild(m);
     }
 
-    // 特別隱藏流星
+    // 隱藏流星顯示祝福語
     const special = document.createElement('div');
     special.className = 'special-meteor';
     special.style.left = Math.random()*90 + '%';
@@ -106,28 +125,22 @@
     document.body.appendChild(special);
 
     special.addEventListener('click', () => {
-      const video = document.getElementById('secretVideo');
-      video.src = "https://www.w3schools.com/html/mov_bbb.mp4"; // 換成你自己的影片連結
-      video.load();
-      video.play();
       document.getElementById('secretScreen').style.display = 'flex';
       document.querySelector('.container').style.display = 'none';
       document.getElementById('background').style.display = 'none';
     });
 
-    const secretVideo = document.getElementById('secretVideo');
-    secretVideo.addEventListener('ended', () => {
+    document.getElementById('closeSecret').addEventListener('click', () => {
       document.getElementById('secretScreen').style.display = 'none';
       document.querySelector('.container').style.display = 'flex';
       document.getElementById('background').style.display = 'block';
     });
 
-    // 煙花動畫
+    // 煙火動畫
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
     class Particle {
       constructor(x, y, color) {
         const angle = Math.random() * 2 * Math.PI;
@@ -183,7 +196,7 @@
       });
     }
 
-    // 點擊禮物盒
+    // 生日文字動畫
     const msgs = [
       "SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃de話","嘻嘻嘻嘻😝",
       "統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"
