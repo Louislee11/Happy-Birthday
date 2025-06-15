@@ -11,46 +11,40 @@
     #background { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
     .star { position:absolute; width:2px; height:2px; background:#fff; border-radius:50%; animation:twinkle 2s infinite ease-in-out; }
     @keyframes twinkle {0%,100%{opacity:0.2;}50%{opacity:1;}}
+
     .meteor { position:absolute; width:120px; height:2px; background:linear-gradient(to left, #fff, transparent); transform:rotate(45deg); animation:shoot 3s linear infinite; pointer-events:none; }
     @keyframes shoot { 0%{opacity:1;}100%{opacity:0; transform:translate(500px,500px) rotate(45deg);} }
 
     .special-meteor {
-      background: radial-gradient(circle, rgba(255,255,255,0.25) 40%, rgba(255,255,255,0) 120%);
+      background: radial-gradient(circle, rgba(255,255,255,0.2) 40%, rgba(255,255,255,0) 120%);
       width: 20px; height: 20px; border-radius: 50%;
       position: absolute;
-      box-shadow: 0 0 5px rgba(255,255,255,0.3);
+      box-shadow: 0 0 6px rgba(255,255,255,0.4);
       animation: sparkle 6s ease-in-out infinite;
       pointer-events:auto; cursor:pointer;
     }
     @keyframes sparkle {
-      0%,100%{ transform: scale(1); opacity: 0.15; }
+      0%,100%{ transform: scale(1); opacity: 0.2; }
       50%{ transform: scale(1.2); opacity: 0.4; }
     }
 
     #secretScreen {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.9); z-index: 9999; color: white;
-      justify-content: center; align-items: center; flex-direction: column; padding: 20px;
+      background: #000; z-index: 9999; color: white;
+      justify-content: center; align-items: center; flex-direction: column;
     }
-    #secretText {
-      max-width: 90%;
-      font-size: 1.8rem;
+    #secretMessage {
+      font-size: 1.6rem;
+      white-space: pre-wrap;
       text-align: center;
-      line-height: 1.8;
-      animation: fadeIn 2s ease-in-out;
-    }
-    #closeSecret {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 1rem;
-      background-color: #fff;
-      color: #000;
-      border-radius: 8px;
-      cursor: pointer;
+      padding: 2rem;
+      line-height: 2.4rem;
+      max-width: 90%;
+      animation: fadeIn 1.5s ease-out;
     }
     @keyframes fadeIn {
-      from {opacity: 0; transform: translateY(20px);}
-      to {opacity: 1; transform: translateY(0);}
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     #fireworks { position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none; display:none; }
@@ -61,28 +55,19 @@
     @keyframes blink {0%,100%{opacity:1;}50%{opacity:0.3;}}
 
     #messageContainer { margin-top:20px; display:flex; flex-direction:column; align-items:center; }
-    .message { color: #fff; font-size:1.8rem; white-space:nowrap; opacity:0; animation:float 4s ease-in-out, glow 2s ease-in-out infinite alternate; }
-    @keyframes float {0%{transform:translateY(10px);opacity:0;}10%,90%{opacity:1;}100%{transform:translateY(-10px);opacity:0;}}
+    .message {  color: #fff;font-size:1.8rem; white-space:nowrap; opacity:0; animation:float 4s ease-in-out, glow 2s ease-in-out infinite alternate; }
+    @keyframes float {0%{transform:translateY(10px);opacity:0;}10%,90%{opacity:1;}100%{transform:translateY(-10px);opacity:0;} }
     @keyframes glow {from{text-shadow:0 0 5px #fff,0 0 10px #ff69b4;}to{text-shadow:0 0 30px #ff66cc,0 0 40px #ffccff;}}
 
-    .final { color: #fff; font-size:2.2rem; font-weight:bold; animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate; }
+    .final {  color: #fff;font-size:2.2rem; font-weight:bold; animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate; }
     @keyframes finalZoom {from{transform:scale(1);}to{transform:scale(1.5);} }
   </style>
 </head>
 <body>
   <div id="background"></div>
-
-  <!-- 隱藏文字畫面 -->
   <div id="secretScreen">
-    <div id="secretText">
-      芳辰之日，遙寄寸心。<br/>
-      願君歲歲無虞，長安長樂；<br/>
-      昭昭如願，年年安瀾。<br/>
-      早得良人，共賞春風。
-    </div>
-    <div id="closeSecret">回到主畫面</div>
+    <div id="secretMessage"></div>
   </div>
-
   <canvas id="fireworks"></canvas>
   <div class="container">
     <div id="giftBox">
@@ -117,34 +102,75 @@
       bg.appendChild(m);
     }
 
-    // 隱藏流星顯示祝福語
     const special = document.createElement('div');
     special.className = 'special-meteor';
-    special.style.left = Math.random()*90 + '%';
-    special.style.top = Math.random()*90 + '%';
+    special.style.left = Math.random()*85 + '%';
+    special.style.top = Math.random()*85 + '%';
     document.body.appendChild(special);
 
+    const secretScreen = document.getElementById('secretScreen');
+    const secretMessage = document.getElementById('secretMessage');
+    const bgMusic = document.getElementById('bgMusic');
+
+    const blessingLines = [
+      "嘿，看到這裡的你",
+      "代表你真的有點細心吶 😊",
+      "",
+      "我沒什麼華麗的話語，",
+      "但希望今天的你，開心就好。",
+      "",
+      "未來的日子裡，",
+      "願你一直被溫柔以待 ✨",
+      "也不要忘了你有多可愛 💖",
+      "",
+      "生日快樂，真的快樂。"
+    ];
+
+    function typeLines(lines, container, i = 0) {
+      if (i >= lines.length) {
+        setTimeout(() => {
+          secretScreen.style.display = 'none';
+          bgMusic.volume = 1;
+        }, 4000);
+        return;
+      }
+      const p = document.createElement('p');
+      container.appendChild(p);
+      let j = 0;
+      const typing = setInterval(() => {
+        p.textContent += lines[i].charAt(j++);
+        if (j >= lines[i].length) {
+          clearInterval(typing);
+          setTimeout(() => typeLines(lines, container, i + 1), 700);
+        }
+      }, 60);
+    }
+
     special.addEventListener('click', () => {
-      document.getElementById('secretScreen').style.display = 'flex';
-      document.querySelector('.container').style.display = 'none';
-      document.getElementById('background').style.display = 'none';
+      secretScreen.style.display = 'flex';
+      secretMessage.innerHTML = '';
+      // 音樂淡出
+      const fadeOut = setInterval(() => {
+        if (bgMusic.volume > 0.01) {
+          bgMusic.volume -= 0.02;
+        } else {
+          clearInterval(fadeOut);
+          bgMusic.pause();
+        }
+      }, 100);
+      typeLines(blessingLines, secretMessage);
     });
 
-    document.getElementById('closeSecret').addEventListener('click', () => {
-      document.getElementById('secretScreen').style.display = 'none';
-      document.querySelector('.container').style.display = 'flex';
-      document.getElementById('background').style.display = 'block';
-    });
-
-    // 煙火動畫
+    // 煙火
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+
     class Particle {
       constructor(x, y, color) {
         const angle = Math.random() * 2 * Math.PI;
-        const speed = Math.random() * 2 + 2;
+        const speed = Math.random() * 2 + 1;
         this.x = x;
         this.y = y;
         this.dx = Math.cos(angle) * speed;
@@ -186,6 +212,7 @@
       requestAnimationFrame(animateFireworks);
       ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+
       if (Math.random() < 0.05) fireworks.push(new Firework());
       fireworks.forEach((fw, i) => {
         fw.particles.forEach(p => {
@@ -196,7 +223,6 @@
       });
     }
 
-    // 生日文字動畫
     const msgs = [
       "SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃de話","嘻嘻嘻嘻😝",
       "統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"
@@ -204,7 +230,6 @@
     const gift = document.getElementById('giftBox');
     const hint = document.getElementById('hint');
     const msgC = document.getElementById('messageContainer');
-    const music = document.getElementById('bgMusic');
 
     gift.addEventListener('click', async () => {
       document.getElementById('background').innerHTML = '';
@@ -212,7 +237,7 @@
       animateFireworks();
       gift.style.display = 'none';
       hint.style.display = 'none';
-      music.play().catch(() => {});
+      bgMusic.play().catch(() => {});
       while (1) {
         for (let i = 0; i < msgs.length; i++) {
           msgC.innerHTML = '';
@@ -225,7 +250,7 @@
           }
           await new Promise(r => setTimeout(r, 1000));
           div.style.opacity = '0';
-          await new Promise(r => setTimeout(r, 308));
+          await new Promise(r => setTimeout(r, 309));
           div.style.opacity = '1';
         }
       }
