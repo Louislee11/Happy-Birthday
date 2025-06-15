@@ -194,4 +194,59 @@
 
     class Particle {
       constructor(x, y, color) {
-        const angle
+        const angle = Math.random() * 2 * Math.PI;
+        const speed = Math.random() * 2 + 2;
+        this.x = x;
+        this.y = y;
+        this.dx = Math.cos(angle) * speed;
+        this.dy = Math.sin(angle) * speed;
+        this.alpha = 1;
+        this.color = color;
+        this.size = Math.random() * 2 + 2;
+      }
+      update() {
+        this.x += this.dx;
+        this.y += this.dy;
+        this.alpha -= 0.015;
+      }
+      draw() {
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    class Firework {
+      constructor() {
+        this.particles = [];
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height * 0.5;
+        const baseHue = Math.floor(Math.random() * 360);
+        for (let i = 0; i < 50; i++) {
+          const color = `hsl(${(baseHue + Math.random()*60) % 360}, 100%, 60%)`;
+          this.particles.push(new Particle(x, y, color));
+        }
+      }
+    }
+
+    const fireworks = [];
+    function animateFireworks() {
+      requestAnimationFrame(animateFireworks);
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      if (Math.random() < 0.05) fireworks.push(new Firework());
+      fireworks.forEach((fw, i) => {
+        fw.particles.forEach(p => {
+          p.update();
+          p.draw();
+        });
+        if (fw.particles.every(p => p.alpha <= 0)) fireworks.splice(i, 1);
+      });
+    }
+  </script>
+</body>
+</html>
