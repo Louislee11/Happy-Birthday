@@ -29,21 +29,14 @@
     }
 
     #secretScreen {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: radial-gradient(ellipse at center, #222 0%, #000 100%);
-      background-size: cover;
-      z-index: 9999;
-      color: white;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      animation: softFade 1s ease-in-out forwards;
       backdrop-filter: blur(8px);
+      z-index: 9999; color: white;
+      justify-content: center; align-items: center; flex-direction: column;
+      animation: softFade 1s ease-in-out forwards;
     }
-    
+
     #secretMessage {
       font-size: 1.6rem;
       white-space: pre-wrap;
@@ -56,7 +49,7 @@
       text-shadow: 0 0 6px #ccc;
       position: relative;
     }
-    
+
     .cursor {
       display: inline-block;
       width: 1px;
@@ -66,11 +59,11 @@
       vertical-align: bottom;
       margin-left: 2px;
     }
-    
+
     @keyframes blinkCursor {
       50% { opacity: 0; }
     }
-    
+
     @keyframes softFade {
       from { opacity: 0; }
       to { opacity: 1; }
@@ -105,181 +98,124 @@
     </div>
     <div id="messageContainer"></div>
     <audio id="bgMusic" src="birthday-song.mp3" loop></audio>
-  </div>
+    </div>
 
   <script>
-    const bg = document.getElementById('background');
-    for(let i=0;i<100;i++){
-      const s=document.createElement('div');
-      s.className='star';
-      s.style.top=Math.random()*100+'vh';
-      s.style.left=Math.random()*100+'vw';
-      s.style.animationDelay=Math.random()*3+'s';
-      bg.appendChild(s);
-    }
-    for(let i=0;i<22;i++){
-      const m=document.createElement('div');
-      m.className='meteor';
-      if(Math.random()<0.5){
-        m.style.left='-20%';
-        m.style.top=Math.random()*100+'vh';
-      }else{
-        m.style.top='-20%';
-        m.style.left=Math.random()*100+'vw';
-      }
-      m.style.animationDelay=Math.random()*2+'s';
-      bg.appendChild(m);
+    const messageContainer = document.getElementById("messageContainer");
+    const secretScreen = document.getElementById("secretScreen");
+    const secretMessage = document.getElementById("secretMessage");
+
+    const specialMeteors = [];
+    for (let i = 0; i < 3; i++) {
+      const meteor = document.createElement("div");
+      meteor.className = "special-meteor";
+      meteor.style.top = `${Math.random() * 80 + 10}%`;
+      meteor.style.left = `${Math.random() * 80 + 10}%`;
+      meteor.addEventListener("click", () => {
+        document.getElementById("bgMusic").pause();
+        showSecretMessage();
+      });
+      document.body.appendChild(meteor);
+      specialMeteors.push(meteor);
     }
 
-    const special = document.createElement('div');
-    special.className = 'special-meteor';
-    special.style.left = Math.random()*85 + '%';
-    special.style.top = Math.random()*85 + '%';
-    document.body.appendChild(special);
-
-    const secretScreen = document.getElementById('secretScreen');
-    const secretMessage = document.getElementById('secretMessage');
-    const bgMusic = document.getElementById('bgMusic');
-
-    const blessingLines = [
-      "嘿，看到這裡的你",
-      "代表你真的有點細心吶 😊",
-      "",
-      "我沒什麼華麗的話語，",
-      "但希望今天的你，開心就好。",
-      "",
-      "未來的日子裡，",
-      "願你一直被溫柔以待 ✨",
-      "也不要忘了你有多可愛 💖",
-      "",
-      "生日快樂，真的快樂。"
+    // Secret typing message content
+    const messageSegments = [
+      "Surprise~~",
+      "無論是甜品還是這個，\n都是我一次弄哦~",
+      "別嫌棄吖~ 不好吃也得吃!! 嘻嘻~",
+      "希望你喜歡 💖",
+      "如果有一天過得不如意了，\n回來這裡看看唄~",
+      "噢對了... 生日快樂 ✨",
     ];
 
-    function typeLines(lines, container, i = 0) {
-      if (i >= lines.length) {
-        setTimeout(() => {
-          secretScreen.style.display = 'none';
-          bgMusic.volume = 1;
-        }, 4000);
+    let currentSegment = 0;
+
+    function showSecretMessage() {
+      secretScreen.style.display = "flex";
+      secretMessage.innerHTML = "";
+      currentSegment = 0;
+      typeLines();
+    }
+
+    function typeLines() {
+      if (currentSegment >= messageSegments.length) {
+        // 結束後顯示一個提示（可加按鈕返回主畫面）
+        const done = document.createElement("div");
+        done.textContent = "\n（點擊畫面即可關閉）";
+        done.style.marginTop = "2rem";
+        done.style.opacity = 0.7;
+        done.style.fontSize = "1rem";
+        secretMessage.appendChild(done);
+        secretScreen.addEventListener("click", () => {
+          secretScreen.style.display = "none";
+          document.getElementById("bgMusic").play();
+        });
         return;
       }
-    
-      const p = document.createElement('p');
-      container.appendChild(p);
-      let j = 0;
-    
-      const cursor = document.createElement('span');
-      cursor.className = 'cursor';
-      p.appendChild(cursor);
-    
-      const typing = setInterval(() => {
-        if (j < lines[i].length) {
-          p.insertBefore(document.createTextNode(lines[i].charAt(j++)), cursor);
-          // 可以加入打字音效（可選）
-          // new Audio('type.mp3').play();
+
+      const text = messageSegments[currentSegment];
+      let index = 0;
+      const lineDiv = document.createElement("div");
+      const cursor = document.createElement("span");
+      cursor.className = "cursor";
+      lineDiv.appendChild(cursor);
+      secretMessage.appendChild(lineDiv);
+
+      const typer = setInterval(() => {
+        if (index < text.length) {
+          const char = document.createTextNode(text[index]);
+          lineDiv.insertBefore(char, cursor);
+          index++;
         } else {
-          clearInterval(typing);
-          setTimeout(() => {
-            cursor.remove();
-            typeLines(lines, container, i + 1);
-          }, 700);
+          clearInterval(typer);
+          lineDiv.removeChild(cursor);
+          currentSegment++;
+          setTimeout(typeLines, 1000); // 下一段延遲
         }
-      }, 60);
-    }
-    // 煙火
-    const canvas = document.getElementById('fireworks');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    class Particle {
-      constructor(x, y, color) {
-        const angle = Math.random() * 2 * Math.PI;
-        const speed = Math.random() * 2 + 1;
-        this.x = x;
-        this.y = y;
-        this.dx = Math.cos(angle) * speed;
-        this.dy = Math.sin(angle) * speed;
-        this.alpha = 1;
-        this.color = color;
-        this.size = Math.random() * 2 + 2;
-      }
-      update() {
-        this.x += this.dx;
-        this.y += this.dy;
-        this.alpha -= 0.015;
-      }
-      draw() {
-        ctx.globalAlpha = this.alpha;
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 3);
-        ctx.fill();
-        ctx.globalAlpha = 1;
-      }
+      }, 60); // 打字速度（你可改成更快/慢）
     }
 
-    class Firework {
-      constructor() {
-        this.particles = [];
-        const x = Math.random() * canvas.width;
-        const y = Math.random() * canvas.height * 0.5;
-        const baseHue = Math.floor(Math.random() * 360);
-        for (let i = 0; i < 50; i++) {
-          const color = `hsl(${(baseHue + Math.random()*60) % 360}, 100%, 60%)`;
-          this.particles.push(new Particle(x, y, color));
-        }
-      }
-    }
-
-    const fireworks = [];
-    function animateFireworks() {
-      requestAnimationFrame(animateFireworks);
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      if (Math.random() < 0.05) fireworks.push(new Firework());
-      fireworks.forEach((fw, i) => {
-        fw.particles.forEach(p => {
-          p.update();
-          p.draw();
-        });
-        if (fw.particles.every(p => p.alpha <= 0)) fireworks.splice(i, 1);
+    // 原始 giftbox 動畫觸發部分（保留）
+    document.getElementById("giftBox").addEventListener("click", () => {
+      document.getElementById("bgMusic").play();
+      document.getElementById("fireworks").style.display = "block";
+      const messages = [
+        "Vanise，生日快樂吖！",
+        "又老了一歲咯~",
+        "能夠認識你是上天給的禮物",
+        "願君 歲歲無虞，長安長樂；",
+        "昭昭如願，年年安瀾。",
+        "早得良人，共賞春風。",
+      ];
+      messages.forEach((msg, i) => {
+        const div = document.createElement("div");
+        div.className = i === messages.length - 1 ? "final" : "message";
+        div.textContent = msg;
+        setTimeout(() => {
+          messageContainer.appendChild(div);
+        }, i * 2000);
       });
+    });
+
+    // 隨機星星背景生成（保留）
+    for (let i = 0; i < 100; i++) {
+      const star = document.createElement("div");
+      star.className = "star";
+      star.style.top = `${Math.random() * 100}%`;
+      star.style.left = `${Math.random() * 100}%`;
+      document.getElementById("background").appendChild(star);
     }
 
-    const msgs = [
-      "SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃de話","嘻嘻嘻嘻😝",
-      "統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"
-    ];
-    const gift = document.getElementById('giftBox');
-    const hint = document.getElementById('hint');
-    const msgC = document.getElementById('messageContainer');
-
-    gift.addEventListener('click', async () => {
-      document.getElementById('background').innerHTML = '';
-      canvas.style.display = 'block';
-      animateFireworks();
-      gift.style.display = 'none';
-      hint.style.display = 'none';
-      bgMusic.play().catch(() => {});
-      while (1) {
-        for (let i = 0; i < msgs.length; i++) {
-          msgC.innerHTML = '';
-          let div = document.createElement('div');
-          div.className = i === msgs.length - 1 ? 'final' : 'message';
-          msgC.appendChild(div);
-          for (let j = 1; j <= msgs[i].length; j++) {
-            div.textContent = msgs[i].slice(0, j);
-            await new Promise(r => setTimeout(r, 100));
-          }
-          await new Promise(r => setTimeout(r, 1000));
-          div.style.opacity = '0';
-          await new Promise(r => setTimeout(r, 309));
-          div.style.opacity = '1';
-        }
-      }
-    });
+    // 隨機流星背景生成（保留）
+    for (let i = 0; i < 20; i++) {
+      const meteor = document.createElement("div");
+      meteor.className = "meteor";
+      meteor.style.top = `${Math.random() * 100}%`;
+      meteor.style.left = `${Math.random() * 100}%`;
+      meteor.style.animationDelay = `${Math.random() * 5}s`;
+      document.body.appendChild(meteor);
+    }
   </script>
 </body>
 </html>
