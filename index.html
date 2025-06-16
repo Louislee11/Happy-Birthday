@@ -73,18 +73,17 @@
     .final { color: #fff; font-size:2.2rem; font-weight:bold; animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate; }
     @keyframes finalZoom {from{transform:scale(1);}to{transform:scale(1.5);} }
 
-    #controlButtons { margin-top: 40px; display: flex; gap: 20px; }
-    .btn {
+    .action-buttons {
+      display: flex; gap: 16px; margin-top: 20px;
+    }
+    .action-buttons button {
       padding: 10px 20px;
       background: rgba(255,255,255,0.1);
-      border: 2px solid #fff;
-      color: #fff;
-      border-radius: 10px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: 0.3s;
+      color: #fff; border: 1px solid #fff;
+      font-size: 1rem; cursor: pointer;
+      border-radius: 8px; transition: background 0.3s;
     }
-    .btn:hover {
+    .action-buttons button:hover {
       background: rgba(255,255,255,0.3);
     }
   </style>
@@ -200,21 +199,6 @@
       showMessage(["YIII？這都被你發現了啊～", "不錯哦~", "很細心唷 😏", "影片裡那段話…", "真的不是講爽的", "或者只是突然很想講幾句廢話","都可以來找我聊聊","我說的話","一直都作數 ☺️","如果你願意的话啦"]);
     });
 
-    document.getElementById('replaySecret').addEventListener('click', () => {
-    const video = document.getElementById('secretVideo');
-    document.getElementById('secretMessage').style.display = 'none';
-    document.getElementById('secretScreen').style.display = 'flex';
-  
-    // 清除打字音效
-    clearInterval(window.typingSoundInterval);
-  
-    // 重播影片
-    video.currentTime = 0;
-    video.play();
-  
-    // 可選：再次進入全螢幕
-    if (video.requestFullscreen) video.requestFullscreen();
-    });
 
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
