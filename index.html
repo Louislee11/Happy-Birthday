@@ -109,10 +109,24 @@
       const video = document.getElementById('secretVideo');
       video.src = "secret-video.mp4"; // 換成你自己的影片連結
       video.load();
-      video.play();
       document.getElementById('secretScreen').style.display = 'flex';
       document.querySelector('.container').style.display = 'none';
       document.getElementById('background').style.display = 'none';
+      
+      video.play().then(() => {
+        // 嘗試進入全螢幕
+        if (video.requestFullscreen) {
+          video.requestFullscreen();
+        } else if (video.webkitRequestFullscreen) {
+          video.webkitRequestFullscreen();
+        } else if (video.mozRequestFullScreen) {
+          video.mozRequestFullScreen();
+        } else if (video.msRequestFullscreen) {
+          video.msRequestFullscreen();
+        }
+      }).catch(err => {
+        console.warn("無法自動進入全螢幕：", err);
+      });
     });
 
     const secretVideo = document.getElementById('secretVideo');
