@@ -33,42 +33,10 @@
       justify-content: center; align-items: center; flex-direction: column;
     }
     #secretVideo {
-      max-width: 90%;
-      max-height: 70%;
+      max-width: 100%;
+      max-height: 100%;
       border: 4px solid #fff;
       border-radius: 10px;
-      margin-bottom: 20px;
-    }
-    #secretTextContainer {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      text-align: center;
-    }
-    .secretLine {
-      font-size: 1.5rem;
-      white-space: pre-wrap;
-      color: #fff;
-    }
-    .typing-cursor::after {
-      content: '|';
-      animation: blinkCursor 1s steps(1) infinite;
-    }
-    @keyframes blinkCursor {
-      0% { opacity: 1; }
-      50% { opacity: 0; }
-      100% { opacity: 1; }
-    }
-    .action-buttons button {
-      padding: 10px 20px;
-      font-size: 1rem;
-      margin: 10px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      background-color: #ff69b4;
-      color: #fff;
     }
 
     #fireworks { position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none; display:none; }
@@ -85,20 +53,41 @@
 
     .final { color: #fff; font-size:2.2rem; font-weight:bold; animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate; }
     @keyframes finalZoom {from{transform:scale(1);}to{transform:scale(1.5);} }
+
+    .typing-cursor::after {
+      content: '|';
+      animation: blinkCursor 1s steps(1) infinite;
+    }
+    @keyframes blinkCursor {
+      0% { opacity: 1; }
+      50% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    .button-group {
+      display: flex;
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .btn {
+      padding: 10px 20px;
+      background: #222;
+      color: #fff;
+      border: 1px solid #888;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .btn:hover {
+      background: #555;
+    }
   </style>
 </head>
 <body>
   <div id="background"></div>
-
   <div id="secretScreen">
     <video id="secretVideo" controls playsinline webkit-playsinline></video>
-    <div id="secretTextContainer"></div>
-    <div class="action-buttons" style="display: none;">
-      <button onclick="replaySecret()">🔁 再看一次</button>
-      <button onclick="goBackToMain()">🔙 回到主畫面</button>
-    </div>
   </div>
-
   <canvas id="fireworks"></canvas>
   <div class="container">
     <div id="giftBox">
@@ -106,6 +95,10 @@
       <div id="hint">點🎁 開聲音開聲音!!</div>
     </div>
     <div id="messageContainer"></div>
+    <div id="replayButtons" class="button-group" style="display:none">
+      <button class="btn" onclick="startAnimation()">🔁 再看一次</button>
+      <button class="btn" onclick="location.reload()">🔙 回到主畫面</button>
+    </div>
     <audio id="bgMusic" src="birthday-song.mp3" loop></audio>
   </div>
 
@@ -139,93 +132,37 @@
     special.style.top = Math.random()*90 + '%';
     document.body.appendChild(special);
 
-    const secretLines = [
-      "這是我藏在星星裡的話...",
-      "希望今天的你，是快樂的，是被愛的",
-      "不管未來在哪裡，都要記得這一刻的笑容",
-      "如果哪天你覺得累了，就回來這裡看看吧 💫"
-    ];
-
     special.addEventListener('click', () => {
       const video = document.getElementById('secretVideo');
       video.src = "secret-video.mp4";
       video.load();
       document.getElementById('secretScreen').style.display = 'flex';
       document.querySelector('.container').style.display = 'none';
-      document.getElementById('background').style.display = 'block';
-      document.getElementById('fireworks').style.display = 'none';
-      video.play();
+      document.getElementById('background').style.display = 'none';
+      document.getElementById('bgMusic').pause();
+
+      video.play().then(() => {
+        if (video.requestFullscreen) video.requestFullscreen();
+      }).catch(err => { console.warn("無法自動進入全螢幕：", err); });
     });
 
-    function replaySecret() {
-      document.querySelector('.action-buttons').style.display = 'none';
-      document.getElementById('secretTextContainer').innerHTML = '';
-      document.getElementById('secretTextContainer').style.display = 'none';
-      document.getElementById('secretVideo').play();
-    }
-
-    function goBackToMain() {
+    const secretVideo = document.getElementById('secretVideo');
+    secretVideo.addEventListener('ended', () => {
       document.getElementById('secretScreen').style.display = 'none';
       document.querySelector('.container').style.display = 'flex';
       document.getElementById('background').style.display = 'block';
-      document.getElementById('fireworks').style.display = 'none';
-    }
-
-    document.getElementById('secretVideo').addEventListener('ended', async () => {
-      const textContainer = document.getElementById('secretTextContainer');
-      textContainer.innerHTML = '';
-      textContainer.style.display = 'flex';
-      for (let line of secretLines) {
-        const div = document.createElement('div');
-        div.className = 'secretLine typing-cursor';
-        textContainer.appendChild(div);
-        for (let i = 1; i <= line.length; i++) {
-          div.textContent = line.slice(0, i);
-          await new Promise(r => setTimeout(r, 80));
-        }
-        div.classList.remove('typing-cursor');
-        await new Promise(r => setTimeout(r, 800));
-      }
-      document.querySelector('.action-buttons').style.display = 'flex';
-    });
-
-    const msgs = [
-      "SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃de話","嘻嘻嘻嘻😝",
-      "統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"
-    ];
-    const gift = document.getElementById('giftBox');
-    const hint = document.getElementById('hint');
-    const msgC = document.getElementById('messageContainer');
-    const music = document.getElementById('bgMusic');
-
-    gift.addEventListener('click', async () => {
-      document.getElementById('background').innerHTML = '';
-      document.getElementById('fireworks').style.display = 'block';
-      animateFireworks();
-      gift.style.display = 'none';
-      hint.style.display = 'none';
-      music.play().catch(() => {});
-      for (let i = 0; i < msgs.length; i++) {
-        msgC.innerHTML = '';
-        let div = document.createElement('div');
-        div.className = i === msgs.length - 1 ? 'final' : 'message';
-        msgC.appendChild(div);
-        for (let j = 1; j <= msgs[i].length; j++) {
-          div.textContent = msgs[i].slice(0, j);
-          await new Promise(r => setTimeout(r, 100));
-        }
-        await new Promise(r => setTimeout(r, 1000));
-      }
+      showSecretMessage();
     });
 
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+
     class Particle {
       constructor(x, y, color) {
         const angle = Math.random() * 2 * Math.PI;
-        const speed = Math.random() * 2 + 1;
+        const speed = Math.random() * 2 + 2;
         this.x = x;
         this.y = y;
         this.dx = Math.cos(angle) * speed;
@@ -248,6 +185,7 @@
         ctx.globalAlpha = 1;
       }
     }
+
     class Firework {
       constructor() {
         this.particles = [];
@@ -260,6 +198,7 @@
         }
       }
     }
+
     const fireworks = [];
     function animateFireworks() {
       requestAnimationFrame(animateFireworks);
@@ -273,6 +212,67 @@
         });
         if (fw.particles.every(p => p.alpha <= 0)) fireworks.splice(i, 1);
       });
+    }
+
+    const msgs = [
+      "SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃de話","嘻嘻嘻嘻😝",
+      "統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"
+    ];
+    const gift = document.getElementById('giftBox');
+    const hint = document.getElementById('hint');
+    const msgC = document.getElementById('messageContainer');
+    const music = document.getElementById('bgMusic');
+
+    gift.addEventListener('click', startAnimation);
+
+    function startAnimation() {
+      document.getElementById('background').innerHTML = '';
+      canvas.style.display = 'block';
+      animateFireworks();
+      gift.style.display = 'none';
+      hint.style.display = 'none';
+      music.play().catch(() => {});
+      playMessages();
+    }
+
+    async function playMessages() {
+      for (let i = 0; i < msgs.length; i++) {
+        msgC.innerHTML = '';
+        let div = document.createElement('div');
+        div.className = i === msgs.length - 1 ? 'final typing-cursor' : 'message typing-cursor';
+        msgC.appendChild(div);
+        for (let j = 1; j <= msgs[i].length; j++) {
+          div.textContent = msgs[i].slice(0, j);
+          await new Promise(r => setTimeout(r, 100));
+        }
+        div.classList.remove('typing-cursor');
+        await new Promise(r => setTimeout(r, 1300));
+      }
+      document.getElementById('replayButtons').style.display = 'flex';
+    }
+
+    function showSecretMessage() {
+      msgC.innerHTML = '';
+      const message = [
+        "這裡藏著一點點我心裡的話...",
+        "或許不夠完美，但真的很認真做了唷",
+        "希望能為你帶來一點點快樂",
+        "生日快樂，我的寶貝 💖"
+      ];
+      (async () => {
+        for (let line of message) {
+          let div = document.createElement('div');
+          div.className = 'message typing-cursor';
+          msgC.appendChild(div);
+          for (let j = 1; j <= line.length; j++) {
+            div.textContent = line.slice(0, j);
+            await new Promise(r => setTimeout(r, 120));
+          }
+          div.classList.remove('typing-cursor');
+          await new Promise(r => setTimeout(r, 1600));
+        }
+        document.getElementById('replayButtons').style.display = 'flex';
+      })();
     }
   </script>
 </body>
