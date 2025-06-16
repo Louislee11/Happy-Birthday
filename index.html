@@ -183,6 +183,7 @@
     special.addEventListener('click', () => {
       secretVideo.src = "secret-video.mp4";
       secretVideo.load();
+      secretVideo.style.display = 'block';
       secretScreen.style.display = 'flex';
       document.querySelector('.container').style.display = 'none';
       document.getElementById('background').style.display = 'none';
