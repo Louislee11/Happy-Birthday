@@ -179,10 +179,8 @@
       function type() {
         if (i <= lines[index].length) {
           secretMessage.textContent = lines[index].slice(0, i);
-      
-          const sound = typeSound.cloneNode();
-          sound.play().catch(() => {});
-      
+          typeSound.currentTime = 0;
+          typeSound.play().catch(() => {});
           i++;
           setTimeout(type, 100);
         } else {
