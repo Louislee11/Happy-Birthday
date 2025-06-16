@@ -200,6 +200,22 @@
       showMessage(["YIII？這都被你發現了啊～", "不錯哦~", "很細心唷 😏", "影片裡那段話…", "真的不是講爽的", "或者只是突然很想講幾句廢話","都可以來找我聊聊","我說的話","一直都作數 ☺️","如果你願意的话啦"]);
     });
 
+    document.getElementById('replaySecret').addEventListener('click', () => {
+    const video = document.getElementById('secretVideo');
+    document.getElementById('secretMessage').style.display = 'none';
+    document.getElementById('secretScreen').style.display = 'flex';
+  
+    // 清除打字音效
+    clearInterval(window.typingSoundInterval);
+  
+    // 重播影片
+    video.currentTime = 0;
+    video.play();
+  
+    // 可選：再次進入全螢幕
+    if (video.requestFullscreen) video.requestFullscreen();
+    });
+
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
