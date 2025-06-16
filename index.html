@@ -268,6 +268,7 @@
     gift.addEventListener('click', async () => {
       document.getElementById('background').innerHTML = '';
       canvas.style.display = 'block';
+      special.style.display = 'none';
       animateFireworks();
       gift.style.display = 'none';
       hint.style.display = 'none';
@@ -282,7 +283,7 @@
           div.textContent = msgs[i].slice(0, j);
           await new Promise(r => setTimeout(r, 120));
         }
-      await new Promise(r => setTimeout(r, 1040));
+      await new Promise(r => setTimeout(r, 1000));
       }
         music.pause();
         controlButtons.style.display = 'flex';
