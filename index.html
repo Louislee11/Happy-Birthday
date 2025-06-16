@@ -187,9 +187,9 @@
           setTimeout(() => showMessage(lines, index + 1), 1000);
         }
       }
-      typeSound.pause();
       type();
     }
+    typeSound.pause();
     special.addEventListener('click', () => {
       secretVideo.src = "secret-video.mp4";
       secretVideo.load();
