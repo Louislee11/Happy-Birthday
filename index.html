@@ -33,18 +33,13 @@
       justify-content: center; align-items: center; flex-direction: column;
     }
     #secretVideo {
-      max-width: 100%;
-      max-height: 100%;
-      border: 4px solid #fff;
-      border-radius: 10px;
+      max-width: 100%; max-height: 100%; border: 4px solid #fff; border-radius: 10px;
     }
-    #secretMessage {
-      display:none; font-size: 1.6rem; color: #fff; white-space: pre-wrap;
-      padding: 2rem; max-width: 90%; text-align:center;
-      animation: fadeIn 1s ease-in;
-    }
-    @keyframes fadeIn {from{opacity:0;}to{opacity:1;}}
 
+    #secretMessage {
+      max-width: 80%; font-size: 1.6rem; text-align: center; color: #fff;
+      margin-top: 20px; white-space: pre-wrap;
+    }
     .typing-cursor::after {
       content: '|';
       animation: blinkCursor 1s steps(1) infinite;
@@ -70,18 +65,30 @@
     .final { color: #fff; font-size:2.2rem; font-weight:bold; animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate; }
     @keyframes finalZoom {from{transform:scale(1);}to{transform:scale(1.5);} }
 
-    .btn-group { margin-top: 2rem; display:flex; gap:1rem; }
-    .btn { background:#fff; color:#000; padding:0.5rem 1.2rem; font-size:1rem; border-radius:8px; cursor:pointer; border:none; transition:all 0.3s; }
-    .btn:hover { background:#ffeb3b; color:#000; }
+    #controlButtons { margin-top: 40px; display: flex; gap: 20px; }
+    .btn {
+      padding: 10px 20px;
+      background: rgba(255,255,255,0.1);
+      border: 2px solid #fff;
+      color: #fff;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .btn:hover {
+      background: rgba(255,255,255,0.3);
+    }
   </style>
 </head>
 <body>
   <div id="background"></div>
+
   <div id="secretScreen">
     <video id="secretVideo" controls playsinline webkit-playsinline></video>
     <div id="secretMessage" class="typing-cursor"></div>
-    <audio id="typeSound" src="type-sound.mp3" preload="auto"></audio>
   </div>
+
   <canvas id="fireworks"></canvas>
   <div class="container">
     <div id="giftBox">
@@ -89,7 +96,12 @@
       <div id="hint">點🎁 開聲音開聲音!!</div>
     </div>
     <div id="messageContainer"></div>
+    <div id="controlButtons" style="display:none;">
+      <button class="btn" onclick="replayGift()">重播 🎬</button>
+      <button class="btn" onclick="returnMain()">返回 🎁</button>
+    </div>
     <audio id="bgMusic" src="birthday-song.mp3" loop></audio>
+    <audio id="typeSound" src="type-sound.mp3" preload="auto"></audio>
   </div>
 
   <script>
@@ -122,69 +134,63 @@
     special.style.top = Math.random()*90 + '%';
     document.body.appendChild(special);
 
+    const secretScreen = document.getElementById('secretScreen');
+    const secretVideo = document.getElementById('secretVideo');
+    const secretMessage = document.getElementById('secretMessage');
+    const typeSound = document.getElementById('typeSound');
+
+    function exitFullscreen() {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else if (document.webkitFullscreenElement) document.webkitExitFullscreen();
+      else if (document.mozFullScreenElement) document.mozCancelFullScreen();
+      else if (document.msFullscreenElement) document.msExitFullscreen();
+    }
+
+    function showMessage(lines, index = 0) {
+      if (index >= lines.length) {
+        setTimeout(() => {
+          secretScreen.style.display = 'none';
+          document.querySelector('.container').style.display = 'flex';
+          document.getElementById('background').style.display = 'block';
+          exitFullscreen();
+        }, 1000);
+        return;
+      }
+      let i = 0;
+      secretMessage.innerHTML = '';
+      function type() {
+        if (i <= lines[index].length) {
+          secretMessage.textContent = lines[index].slice(0, i);
+          typeSound.currentTime = 0;
+          typeSound.play().catch(()=>{});
+          i++;
+          setTimeout(type, 100);
+        } else {
+          setTimeout(() => showMessage(lines, index+1), 1500);
+        }
+      }
+      type();
+    }
+
     special.addEventListener('click', () => {
-      const video = document.getElementById('secretVideo');
-      const message = document.getElementById('secretMessage');
-      const music = document.getElementById('bgMusic');
-      music.pause();
-      message.textContent = '';
-      video.src = "secret-video.mp4";
-      video.load();
-      document.getElementById('secretScreen').style.display = 'flex';
+      secretVideo.src = "secret-video.mp4";
+      secretVideo.load();
+      secretScreen.style.display = 'flex';
       document.querySelector('.container').style.display = 'none';
       document.getElementById('background').style.display = 'none';
-  
-    function exitFullscreen() {
-        if (document.fullscreenElement) {
-          document.exitFullscreen().catch(() => {});
-        } else if (document.webkitFullscreenElement) {
-          document.webkitExitFullscreen();
-        } else if (document.mozFullScreenElement) {
-          document.mozCancelFullScreen();
-        } else if (document.msFullscreenElement) {
-          document.msExitFullscreen();
-        }
-      }
-      
-  const typeSound = document.getElementById('typeSound');
-      
-      video.play().then(() => {
-        if (video.requestFullscreen) video.requestFullscreen();
-      });
-
-      video.onended = () => {
-        video.style.display = 'none';
-        message.style.display = 'block';
-        typeSecretMessage(["願你：", "歲歲無虞，長安長樂；", "昭昭如願，年年安瀾。", "早得良人，共賞春風。"]); 
-      }
+      secretMessage.innerHTML = '';
+      secretVideo.play().then(() => {
+        if (secretVideo.requestFullscreen) secretVideo.requestFullscreen();
+        else if (secretVideo.webkitRequestFullscreen) secretVideo.webkitRequestFullscreen();
+        else if (secretVideo.mozRequestFullScreen) secretVideo.mozRequestFullScreen();
+        else if (secretVideo.msRequestFullscreen) secretVideo.msRequestFullscreen();
+      }).catch(err => {});
     });
 
-
-    function typeLines(lines, container, onComplete) {
-      let index = 0;
-      function typeLine() {
-        if (index >= lines.length) return onComplete();
-        const div = document.createElement('div');
-        div.className = 'typing-line typing-cursor';
-        container.appendChild(div);
-        let i = 0;
-        function typeChar() {
-          if (i <= lines[index].length) {
-            div.textContent = lines[index].slice(0, i);
-            typeSound.currentTime = 0;
-            typeSound.play().catch(() => {});
-            i++;
-            setTimeout(typeChar, 80);
-          } else {
-            div.classList.remove('typing-cursor');
-            index++;
-            setTimeout(typeLine, 600);
-          }
-        }
-        typeChar();
-      }
-      typeLine();
-    }
+    secretVideo.addEventListener('ended', () => {
+      secretVideo.style.display = 'none';
+      showMessage(["Surprise~~", "無論是甜品還是這個", "都是我一次弄哦", "別嫌棄吖", "不好吃也得吃!!", "嘻嘻", "希望你喜歡 💖", "如果有一天過得不如意了", "回來這裡看看唄", "噢~對了", "生日快樂 ✨"]);
+    });
 
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
@@ -238,22 +244,18 @@
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       if (Math.random() < 0.05) fireworks.push(new Firework());
       fireworks.forEach((fw, i) => {
-        fw.particles.forEach(p => {
-          p.update();
-          p.draw();
-        });
+        fw.particles.forEach(p => { p.update(); p.draw(); });
         if (fw.particles.every(p => p.alpha <= 0)) fireworks.splice(i, 1);
       });
     }
 
-    const msgs = [
-      "SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃de話","嘻嘻嘻嘻😝",
-      "統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"
-    ];
     const gift = document.getElementById('giftBox');
     const hint = document.getElementById('hint');
     const msgC = document.getElementById('messageContainer');
     const music = document.getElementById('bgMusic');
+    const controlButtons = document.getElementById('controlButtons');
+
+    const msgs = ["SURPRISE 🥳","都是我第一次弄其实☺️","甜品還是...這個","雖然不完美", "但是真的想為你做些什麼","嘻嘻~不要浪费噢!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"];
 
     gift.addEventListener('click', async () => {
       document.getElementById('background').innerHTML = '';
@@ -271,32 +273,24 @@
           div.textContent = msgs[i].slice(0, j);
           await new Promise(r => setTimeout(r, 100));
         }
-        await new Promise(r => setTimeout(r, 1300));
+        await new Promise(r => setTimeout(r, 1000));
+        div.style.opacity = '0';
+        await new Promise(r => setTimeout(r, 210));
+        div.style.opacity = '1';
       }
       music.pause();
-
-      const btnGroup = document.createElement('div');
-      btnGroup.className = 'btn-group';
-      const replayBtn = document.createElement('button');
-      const backBtn = document.createElement('button');
-      replayBtn.textContent = '重播';
-      backBtn.textContent = '返回';
-      replayBtn.className = backBtn.className = 'btn';
-
-      replayBtn.onclick = () => window.location.reload();
-      backBtn.onclick = () => {
-        msgC.innerHTML = '';
-        document.getElementById('background').style.display = 'block';
-        canvas.style.display = 'none';
-        document.querySelector('.container').style.display = 'flex';
-        document.getElementById('giftBox').style.display = 'block';
-        hint.style.display = 'block';
-      };
-
-      btnGroup.appendChild(replayBtn);
-      btnGroup.appendChild(backBtn);
-      msgC.appendChild(btnGroup);
+      controlButtons.style.display = 'flex';
     });
+
+    function replayGift() {
+      controlButtons.style.display = 'none';
+      msgC.innerHTML = '';
+      gift.click();
+    }
+
+    function returnMain() {
+      window.location.reload();
+    }
   </script>
 </body>
 </html>
