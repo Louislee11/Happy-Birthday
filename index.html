@@ -73,23 +73,19 @@
     .final { color: #fff; font-size:2.2rem; font-weight:bold; animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate; }
     @keyframes finalZoom {from{transform:scale(1);}to{transform:scale(1.5);} }
 
-    .button-group {
-      margin-top: 20px;
-      display: flex;
-      gap: 1.5rem;
-    }
-    .button-group button {
-      padding: 0.6rem 1.2rem;
-      font-size: 1.2rem;
-      border: none;
-      border-radius: 8px;
-      background: #fff;
-      color: #000;
+    #controlButtons { margin-top: 40px; display: flex; gap: 20px; }
+    .btn {
+      padding: 10px 20px;
+      background: rgba(255,255,255,0.1);
+      border: 2px solid #fff;
+      color: #fff;
+      border-radius: 10px;
+      font-size: 1rem;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: 0.3s;
     }
-    .button-group button:hover {
-      background: #ffe066;
+    .btn:hover {
+      background: rgba(255,255,255,0.3);
     }
   </style>
 </head>
@@ -117,229 +113,207 @@
   </div>
 
   <script>
-  const bg = document.getElementById('background');
-  for (let i = 0; i < 100; i++) {
-    const s = document.createElement('div');
-    s.className = 'star';
-    s.style.top = Math.random() * 100 + 'vh';
-    s.style.left = Math.random() * 100 + 'vw';
-    s.style.animationDelay = Math.random() * 3 + 's';
-    bg.appendChild(s);
-  }
-  for (let i = 0; i < 22; i++) {
-    const m = document.createElement('div');
-    m.className = 'meteor';
-    if (Math.random() < 0.5) {
-      m.style.left = '-20%';
-      m.style.top = Math.random() * 100 + 'vh';
-    } else {
-      m.style.top = '-20%';
-      m.style.left = Math.random() * 100 + 'vw';
+    const bg = document.getElementById('background');
+    for(let i=0;i<100;i++){
+      const s=document.createElement('div');
+      s.className='star';
+      s.style.top=Math.random()*100+'vh';
+      s.style.left=Math.random()*100+'vw';
+      s.style.animationDelay=Math.random()*3+'s';
+      bg.appendChild(s);
     }
-    m.style.animationDelay = Math.random() * 2 + 's';
-    bg.appendChild(m);
-  }
-  
-  // === 隱藏星星 ===
-  let specialStar;
-  function createSpecialStar() {
-    specialStar = document.createElement('div');
-    specialStar.className = 'special-meteor';
-    specialStar.style.left = Math.random() * 90 + '%';
-    specialStar.style.top = Math.random() * 90 + '%';
-    document.body.appendChild(specialStar);
-  
-    specialStar.addEventListener('click', () => {
-      const video = document.getElementById('secretVideo');
-      video.src = "secret-video.mp4";
-      video.load();
-      document.getElementById('secretScreen').style.display = 'flex';
+    for(let i=0;i<22;i++){
+      const m=document.createElement('div');
+      m.className='meteor';
+      if(Math.random()<0.5){
+        m.style.left='-20%';
+        m.style.top=Math.random()*100+'vh';
+      }else{
+        m.style.top='-20%';
+        m.style.left=Math.random()*100+'vw';
+      }
+      m.style.animationDelay=Math.random()*2+'s';
+      bg.appendChild(m);
+    }
+
+    const special = document.createElement('div');
+    special.className = 'special-meteor';
+    special.style.left = Math.random()*90 + '%';
+    special.style.top = Math.random()*90 + '%';
+    document.body.appendChild(special);
+
+    const secretScreen = document.getElementById('secretScreen');
+    const secretVideo = document.getElementById('secretVideo');
+    const secretMessage = document.getElementById('secretMessage');
+    const typeSound = document.getElementById('typeSound');
+
+    function exitFullscreen() {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else if (document.webkitFullscreenElement) document.webkitExitFullscreen();
+      else if (document.mozFullScreenElement) document.mozCancelFullScreen();
+      else if (document.msFullscreenElement) document.msExitFullscreen();
+    }
+
+    function showMessage(lines, index = 0) {
+      if (index >= lines.length) {
+        setTimeout(() => {
+          secretScreen.style.display = 'none';
+          document.querySelector('.container').style.display = 'flex';
+          document.getElementById('background').style.display = 'block';
+          exitFullscreen();
+        }, 1000);
+        return;
+      }
+      let i = 0;
+      secretMessage.innerHTML = '';
+      function type() {
+        if (i <= lines[index].length) {
+          secretMessage.textContent = lines[index].slice(0, i);
+          typeSound.currentTime = 0;
+          typeSound.play().catch(()=>{});
+          i++;
+          setTimeout(type, 100);
+        } else {
+          setTimeout(() => showMessage(lines, index+1), 1000);
+        }
+      }
+      type();
+    }
+
+    special.addEventListener('click', () => {
+      secretVideo.src = "secret-video.mp4";
+      secretVideo.load();
+      secretScreen.style.display = 'flex';
       document.querySelector('.container').style.display = 'none';
       document.getElementById('background').style.display = 'none';
-      document.getElementById('fireworks').style.display = 'none';
-      if (document.fullscreenEnabled) video.requestFullscreen?.();
-      else if (video.webkitRequestFullscreen) video.webkitRequestFullscreen();
-  
-      video.play();
+      secretMessage.innerHTML = '';
+      secretVideo.play().then(() => {
+        if (secretVideo.requestFullscreen) secretVideo.requestFullscreen();
+        else if (secretVideo.webkitRequestFullscreen) secretVideo.webkitRequestFullscreen();
+        else if (secretVideo.mozRequestFullScreen) secretVideo.mozRequestFullScreen();
+        else if (secretVideo.msRequestFullscreen) secretVideo.msRequestFullscreen();
+      }).catch(err => {});
     });
-  }
-  createSpecialStar();
+
+    secretVideo.addEventListener('ended', () => {
+      secretVideo.style.display = 'none';
+      showMessage(["YIII？這都被你發現了啊～", "不錯哦~", "很細心唷 😏", "影片裡那段話…", "真的不是講爽的", "或者只是突然很想講幾句廢話","都可以來找我聊聊","我說的話","一直都作數 ☺️","如果你願意的话啦"]);
+    });
+
+    document.getElementById('replaySecret').addEventListener('click', () => {
+    const video = document.getElementById('secretVideo');
+    document.getElementById('secretMessage').style.display = 'none';
+    document.getElementById('secretScreen').style.display = 'flex';
   
-  const secretVideo = document.getElementById('secretVideo');
-  const secretScreen = document.getElementById('secretScreen');
+    // 清除打字音效
+    clearInterval(window.typingSoundInterval);
   
-  // secret message 顯示完回主畫面
-  secretVideo.addEventListener('ended', async () => {
-    document.exitFullscreen?.();
-    document.webkitExitFullscreen?.();
-    secretScreen.style.display = 'none';
-    showSecretMessage();
-  });
+    // 重播影片
+    video.currentTime = 0;
+    video.play();
   
-  let audioCtx, keySoundBuffer;
-  async function loadKeySound() {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const res = await fetch("typing-key.mp3");
-    const arrayBuffer = await res.arrayBuffer();
-    keySoundBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-  }
-  loadKeySound();
+    // 可選：再次進入全螢幕
+    if (video.requestFullscreen) video.requestFullscreen();
+    });
 
-    function playKeySound() {
-      const source = audioCtx.createBufferSource();
-      source.buffer = keySoundBuffer;
-      source.connect(audioCtx.destination);
-      source.start(0);
+    const canvas = document.getElementById('fireworks');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    class Particle {
+      constructor(x, y, color) {
+        const angle = Math.random() * 2 * Math.PI;
+        const speed = Math.random() * 2 + 1.5;
+        this.x = x;
+        this.y = y;
+        this.dx = Math.cos(angle) * speed;
+        this.dy = Math.sin(angle) * speed;
+        this.alpha = 1;
+        this.color = color;
+        this.size = Math.random() * 2 + 2;
+      }
+      update() {
+        this.x += this.dx;
+        this.y += this.dy;
+        this.alpha -= 0.015;
+      }
+      draw() {
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 3);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
     }
 
-    const secretMsgs = ["YIII？這都被你發現了啊～", "不錯哦~", "很細心唷 😏", "影片裡那段話…", "真的不是講爽的", "或者只是突然很想講幾句廢話","都可以來找我聊聊","我說的話","一直都作數 ☺️","如果你願意的话啦"];
-
-
-  async function showSecretMessage() {
-  const container = document.querySelector('.container');
-  const msgC = document.getElementById('messageContainer');
-  const music = document.getElementById('bgMusic');
-  msgC.innerHTML = '';
-  container.style.display = 'flex';
-  document.getElementById('background').style.display = 'block';
-
-  for (const msg of secretMsgs) {
-    const div = document.createElement('div');
-    div.className = 'message typing-cursor';
-    msgC.appendChild(div);
-    for (let i = 0; i < msg.length; i++) {
-      div.textContent = msg.slice(0, i + 1);
-      playKeySound();
-      await new Promise(r => setTimeout(r, 120));
+    class Firework {
+      constructor() {
+        this.particles = [];
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height * 0.5;
+        const baseHue = Math.floor(Math.random() * 360);
+        for (let i = 0; i < 22; i++) {
+          const color = `hsl(${(baseHue + Math.random()*60) % 360}, 100%, 60%)`;
+          this.particles.push(new Particle(x, y, color));
+        }
+      }
     }
-    div.classList.remove('typing-cursor');
-    await new Promise(r => setTimeout(r, 1200));
-  }
-}
 
-// === 禮物盒 ===
-const gift = document.getElementById('giftBox');
-const hint = document.getElementById('hint');
-const msgC = document.getElementById('messageContainer');
-const music = document.getElementById('bgMusic');
-const canvas = document.getElementById('fireworks');
-const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-class Particle {
-  constructor(x, y, color) {
-    const angle = Math.random() * 2 * Math.PI;
-    const speed = Math.random() * 2 + 1.5;
-    this.x = x; this.y = y;
-    this.dx = Math.cos(angle) * speed;
-    this.dy = Math.sin(angle) * speed;
-    this.alpha = 1; this.color = color;
-    this.size = Math.random() * 2 + 2;
-  }
-  update() {
-    this.x += this.dx;
-    this.y += this.dy;
-    this.alpha -= 0.015;
-  }
-  draw() {
-    ctx.globalAlpha = this.alpha;
-    ctx.fillStyle = this.color;
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.globalAlpha = 1;
-  }
-}
-class Firework {
-  constructor() {
-    this.particles = [];
-    const x = Math.random() * canvas.width;
-    const y = Math.random() * canvas.height * 0.5;
-    const baseHue = Math.floor(Math.random() * 360);
-    for (let i = 0; i < 22 i++) {
-      const color = `hsl(${(baseHue + Math.random() * 60) % 360}, 100%, 60%)`;
-      this.particles.push(new Particle(x, y, color));
+    const fireworks = [];
+    function animateFireworks() {
+      requestAnimationFrame(animateFireworks);
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if (Math.random() < 0.05) fireworks.push(new Firework());
+      fireworks.forEach((fw, i) => {
+        fw.particles.forEach(p => { p.update(); p.draw(); });
+        if (fw.particles.every(p => p.alpha <= 0)) fireworks.splice(i, 1);
+      });
     }
-  }
-}
-const fireworks = [];
-function animateFireworks() {
-  requestAnimationFrame(animateFireworks);
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  if (Math.random() < 0.05) fireworks.push(new Firework());
-  fireworks.forEach((fw, i) => {
-    fw.particles.forEach(p => { p.update(); p.draw(); });
-    if (fw.particles.every(p => p.alpha <= 0)) fireworks.splice(i, 1);
-  });
-}
 
-const msgs = [
-  "SURPRISE 🥳", "第一次弄的哦☺️", "甜品還是...這個",
-  "不好吃de話", "嘻嘻嘻嘻😝", "統統給我吃下去!!",
-  "得空常回來看看唄", "希望你喜歡 💖", "噢~對了", "生日快樂 ✨"
-];
+    const gift = document.getElementById('giftBox');
+    const hint = document.getElementById('hint');
+    const msgC = document.getElementById('messageContainer');
+    const music = document.getElementById('bgMusic');
+    const controlButtons = document.getElementById('controlButtons');
 
-gift.addEventListener('click', async () => {
-  if (specialStar) specialStar.remove();
-  document.getElementById('background').innerHTML = '';
-  canvas.style.display = 'block';
-  animateFireworks();
-  gift.style.display = 'none';
-  hint.style.display = 'none';
-  msgC.innerHTML = '';
-  try { await music.play(); } catch {}
+    const msgs = ["SURPRISE 🥳","其實呢","都是我第一次弄☺️","甜品還是這個","雖然不完美", "但是真的想為你做些什麼","嘻嘻~不準浪費噢~","有空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"];
 
-  for (let i = 0; i < msgs.length; i++) {
-    let div = document.createElement('div');
-    div.className = i === msgs.length - 1 ? 'final' : 'message';
-    msgC.appendChild(div);
-    for (let j = 1; j <= msgs[i].length; j++) {
-      div.textContent = msgs[i].slice(0, j);
-      await new Promise(r => setTimeout(r, 100));
+    gift.addEventListener('click', async () => {
+      document.getElementById('background').innerHTML = '';
+      canvas.style.display = 'block';
+      special.style.display = 'none';
+      animateFireworks();
+      gift.style.display = 'none';
+      hint.style.display = 'none';
+      await music.play().catch(() => {});
+
+      for (let i = 0; i < msgs.length; i++) {
+        msgC.innerHTML = '';
+        let div = document.createElement('div');
+        div.className = i === msgs.length - 1 ? 'final' : 'message';
+        msgC.appendChild(div);
+        for (let j = 1; j <= msgs[i].length; j++) {
+          div.textContent = msgs[i].slice(0, j);
+          await new Promise(r => setTimeout(r, 120));
+        }
+      await new Promise(r => setTimeout(r, 980));
+      }
+        music.pause();
+        controlButtons.style.display = 'flex';
+    });
+
+    function replayGift() {
+      controlButtons.style.display = 'none';
+      msgC.innerHTML = '';
+      gift.click();
     }
-    await new Promise(r => setTimeout(r, 1000));
-    div.style.opacity = '0';
-    await new Promise(r => setTimeout(r, 310));
-    div.style.opacity = '1';
-  }
 
-  music.pause();
-  showButtons();
-});
-
-function showButtons() {
-  const replayBtn = document.createElement('button');
-  const backBtn = document.createElement('button');
-  replayBtn.textContent = '重播';
-  backBtn.textContent = '返回';
-  [replayBtn, backBtn].forEach(btn => {
-    btn.style.cssText = 'margin:10px;padding:10px 20px;font-size:1.2rem;background:#fff;border:none;border-radius:10px;cursor:pointer;z-index:10;';
-    msgC.appendChild(btn);
-  });
-
-  replayBtn.addEventListener('click', () => location.reload());
-  backBtn.addEventListener('click', () => {
-    canvas.style.display = 'none';
-    msgC.innerHTML = '';
-    document.getElementById('background').innerHTML = '';
-    document.querySelector('.container').style.display = 'flex';
-    gift.style.display = 'block';
-    hint.style.display = 'block';
-    music.pause(); music.currentTime = 0;
-    createSpecialStar();
-    // 重建背景星星
-    for (let i = 0; i < 100; i++) {
-      const s = document.createElement('div');
-      s.className = 'star';
-      s.style.top = Math.random() * 100 + 'vh';
-      s.style.left = Math.random() * 100 + 'vw';
-      s.style.animationDelay = Math.random() * 3 + 's';
-      document.getElementById('background').appendChild(s);
+    function returnMain() {
+      window.location.reload();
     }
-  });
-}
-</script>
+  </script>
 </body>
 </html>
