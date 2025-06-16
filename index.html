@@ -257,27 +257,21 @@
 
     const msgs = ["SURPRISE 🥳","都是我第一次弄其实☺️","甜品還是...這個","雖然不完美", "但是真的想為你做些什麼","嘻嘻~不要浪费噢!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"];
 
-    gift.addEventListener('click', async () => {
-      document.getElementById('background').innerHTML = '';
-      canvas.style.display = 'block';
-      animateFireworks();
-      gift.style.display = 'none';
-      hint.style.display = 'none';
-      music.play().catch(() => {});
+    async function playMessages() {
       for (let i = 0; i < msgs.length; i++) {
         msgC.innerHTML = '';
         let div = document.createElement('div');
-        div.className = i === msgs.length - 1 ? 'final' : 'message';
+        div.className = i === msgs.length - 1 ? 'final typing-cursor' : 'message typing-cursor';
         msgC.appendChild(div);
         for (let j = 1; j <= msgs[i].length; j++) {
           div.textContent = msgs[i].slice(0, j);
           await new Promise(r => setTimeout(r, 100));
         }
-        await new Promise(r => setTimeout(r, 1100));
-        div.style.opacity = '0';
-        await new Promise(r => setTimeout(r, 310));
-        div.style.opacity = '1';
+        div.classList.remove('typing-cursor');
+        await new Promise(r => setTimeout(r, 1200));
       }
+      document.getElementById('replayButtons').style.display = 'flex';
+    }
       music.pause();
       controlButtons.style.display = 'flex';
     });
