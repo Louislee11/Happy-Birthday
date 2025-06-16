@@ -28,61 +28,35 @@
     }
 
     #secretScreen {
-      display: none;
-      position: fixed; top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.95);
-      z-index: 9999;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: #000; z-index: 9999; color: white;
+      justify-content: center; align-items: center; flex-direction: column;
     }
-
     #secretVideo {
-      width: 80%;
-      max-height: 60%;
-      border-radius: 12px;
-      margin-bottom: 20px;
+      max-width: 90vw; max-height: 60vh;
+      border: 4px solid #fff;
+      border-radius: 10px;
+      margin-bottom: 1rem;
     }
 
     #secretMessage {
-      max-width: 90%;
-      color: #fff;
-      font-size: 1.8rem;
-      text-align: center;
-      white-space: pre-line;
-      margin-top: 10px;
-      line-height: 1.6;
+      text-align: center; max-width: 90vw; font-size: 1.5rem;
+      white-space: pre-line; padding: 1rem; line-height: 2.2rem;
     }
-
     .typing-cursor::after {
       content: '|';
       animation: blinkCursor 1s steps(1) infinite;
     }
     @keyframes blinkCursor {
-      0%, 100% { opacity: 1; }
+      0% { opacity: 1; }
       50% { opacity: 0; }
+      100% { opacity: 1; }
     }
 
-    .fade-in {
-      animation: fadeIn 2s ease-out forwards;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .return-button {
-      margin-top: 30px;
-      padding: 10px 20px;
-      font-size: 1rem;
-      background: #ff69b4;
-      color: white;
-      border: none;
-      border-radius: 8px;
+    #returnBtn {
+      margin-top: 20px; padding: 10px 20px; background: #ff69b4;
+      border: none; border-radius: 5px; color: white; font-size: 1rem;
       cursor: pointer;
-      box-shadow: 0 0 15px #ffccff;
     }
 
     #fireworks { position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none; display:none; }
@@ -96,34 +70,29 @@
     .message { color: #fff; font-size:1.8rem; white-space:nowrap; opacity:0; animation:float 4s ease-in-out, glow 2s ease-in-out infinite alternate; }
     @keyframes float {0%{transform:translateY(10px);opacity:0;}10%,90%{opacity:1;}100%{transform:translateY(-10px);opacity:0;}}
     @keyframes glow {from{text-shadow:0 0 5px #fff,0 0 10px #ff69b4;}to{text-shadow:0 0 30px #ff66cc,0 0 40px #ffccff;}}
-
     .final { color: #fff; font-size:2.2rem; font-weight:bold; animation:finalZoom 1s ease-in-out infinite alternate, glow 3s ease-in-out infinite alternate; }
     @keyframes finalZoom {from{transform:scale(1);}to{transform:scale(1.5);} }
   </style>
 </head>
 <body>
   <div id="background"></div>
-
-<!-- 隱藏星星觸發畫面 -->
-  <div id="secretScreen" style="display:none;">
-    <video id="secretVideo" controls></video>
+  <div id="secretScreen">
+    <video id="secretVideo" controls playsinline webkit-playsinline></video>
     <div id="secretMessage" class="typing-cursor"></div>
-    <button id="returnButton" class="return-button" style="display:none;">返回主頁</button>
+    <button id="returnBtn" style="display:none">返回</button>
   </div>
 
-  <!-- 禮物盒區（保留你原本動畫用的區域） -->
-  <div class="container" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;">
+  <canvas id="fireworks"></canvas>
+  <div class="container">
     <div id="giftBox">
-      <img src="gift.gif" width="160" alt="禮物盒" />
-      <div id="hint" style="color:#ffeb3b;text-align:center;">點 🎁 開聲音開聲音!!</div>
+      <img src="gift.gif" width="160" alt="禮物盒">
+      <div id="hint">點🎁 開聲音開聲音!!</div>
     </div>
+    <div id="messageContainer"></div>
+    <audio id="bgMusic" src="birthday-song.mp3" loop></audio>
   </div>
-
-  <!-- 音樂 -->
-  <audio id="bgMusic" src="birthday-song.mp3" loop></audio>
 
   <script>
-    // 背景星星與流星
     const bg = document.getElementById('background');
     for(let i=0;i<100;i++){
       const s=document.createElement('div');
@@ -133,7 +102,7 @@
       s.style.animationDelay=Math.random()*3+'s';
       bg.appendChild(s);
     }
-    for(let i=0;i<25;i++){
+    for(let i=0;i<22;i++){
       const m=document.createElement('div');
       m.className='meteor';
       if(Math.random()<0.5){
@@ -143,11 +112,11 @@
         m.style.top='-20%';
         m.style.left=Math.random()*100+'vw';
       }
-      m.style.animationDelay=Math.random()*3+'s';
+      m.style.animationDelay=Math.random()*2+'s';
       bg.appendChild(m);
     }
 
-    // 特別星星觸發影片 + 秘密訊息
+    // 隱藏星星
     const special = document.createElement('div');
     special.className = 'special-meteor';
     special.style.left = Math.random()*90 + '%';
@@ -157,65 +126,60 @@
     const secretScreen = document.getElementById('secretScreen');
     const secretVideo = document.getElementById('secretVideo');
     const secretMessage = document.getElementById('secretMessage');
-    const returnButton = document.getElementById('returnButton');
+    const returnBtn = document.getElementById('returnBtn');
+
+    const secretTexts = [
+      "這是一段只有你能看到的訊息...",
+      "謝謝你的出現 🌟",
+      "這一年有你的陪伴，是我最幸運的事。",
+      "希望未來還能一起走很多路 ✨",
+      "生日快樂 🎂💖"
+    ];
 
     special.addEventListener('click', () => {
       secretVideo.src = "secret-video.mp4";
       secretVideo.load();
       secretScreen.style.display = 'flex';
       document.querySelector('.container').style.display = 'none';
+      document.getElementById('background').style.display = 'block';
       secretVideo.play();
     });
 
     secretVideo.addEventListener('ended', () => {
       secretVideo.style.display = 'none';
-      showTypingMessage([
-        "Surprise~~\n",
-        "如果有一天過得不如意了，",
-        "回來這裡看看吧 🌌",
-        "因為你，真的值得被溫柔以待。",
-        "生日快樂，我真心祝福你 💖"
-      ]);
+      showSecretMessages();
     });
 
-    function showTypingMessage(lines) {
-      let index = 0;
-      let charIndex = 0;
-      secretMessage.textContent = '';
-      function typeChar() {
-        if (index < lines.length) {
-          if (charIndex < lines[index].length) {
-            secretMessage.textContent += lines[index].charAt(charIndex);
-            charIndex++;
-            setTimeout(typeChar, 80);
-          } else {
-            secretMessage.textContent += '\n';
-            index++;
-            charIndex = 0;
-            setTimeout(typeChar, 400);
-          }
-        } else {
-          returnButton.style.display = 'block';
-          returnButton.classList.add('fade-in');
+    async function showSecretMessages() {
+      for (let line of secretTexts) {
+        secretMessage.innerHTML = '';
+        for (let i = 0; i < line.length; i++) {
+          secretMessage.innerHTML += line[i];
+          await new Promise(r => setTimeout(r, 100));
         }
+        await new Promise(r => setTimeout(r, 1200));
       }
-      typeChar();
+      returnBtn.style.display = 'block';
     }
 
-    returnButton.addEventListener('click', () => {
+    returnBtn.addEventListener('click', () => {
       secretScreen.style.display = 'none';
-      document.querySelector('.container').style.display = 'flex';
       secretVideo.style.display = 'block';
-      secretMessage.textContent = '';
-      returnButton.style.display = 'none';
+      secretMessage.innerHTML = '';
+      returnBtn.style.display = 'none';
+      document.querySelector('.container').style.display = 'flex';
     });
 
-    // 背景音樂播放
-    document.getElementById('giftBox').addEventListener('click', () => {
-      document.getElementById('bgMusic').play().catch(() => {});
-    });
+    // 原本禮物盒點擊
+    const msgs = [
+      "SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃de話","嘻嘻嘻嘻😝",
+      "統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"
+    ];
+    const gift = document.getElementById('giftBox');
+    const hint = document.getElementById('hint');
+    const msgC = document.getElementById('messageContainer');
+    const music = document.getElementById('bgMusic');
 
-    // 煙花動畫
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
@@ -225,8 +189,7 @@
       constructor(x, y, color) {
         const angle = Math.random() * 2 * Math.PI;
         const speed = Math.random() * 2 + 2;
-        this.x = x;
-        this.y = y;
+        this.x = x; this.y = y;
         this.dx = Math.cos(angle) * speed;
         this.dy = Math.sin(angle) * speed;
         this.alpha = 1;
@@ -276,18 +239,8 @@
       });
     }
 
-    // 點擊禮物盒
-    const msgs = [
-      "SURPRISE 🥳","第一次弄的哦☺️","甜品還是...這個","不好吃de話","嘻嘻嘻嘻😝",
-      "統統給我吃下去!!","得空常回來看看唄","希望你喜歡 💖","噢~對了","生日快樂 ✨"
-    ];
-    const gift = document.getElementById('giftBox');
-    const hint = document.getElementById('hint');
-    const msgC = document.getElementById('messageContainer');
-    const music = document.getElementById('bgMusic');
-
     gift.addEventListener('click', async () => {
-      document.getElementById('background').innerHTML = '';
+      bg.innerHTML = '';
       canvas.style.display = 'block';
       animateFireworks();
       gift.style.display = 'none';
