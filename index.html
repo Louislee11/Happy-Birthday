@@ -276,6 +276,9 @@
         }
       await new Promise(r => setTimeout(r, 1600));
       }
+        music.pause();
+        controlButtons.style.display = 'flex';
+    });
 
     function replayGift() {
       controlButtons.style.display = 'none';
