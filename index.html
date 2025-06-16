@@ -15,7 +15,7 @@
     @keyframes shoot { 0%{opacity:1;}100%{opacity:0; transform:translate(500px,500px) rotate(45deg);} }
 
     .special-meteor {
-      background: radial-gradient(circle, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0) 80%);
+      background: radial-gradient(circle, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0) 100%);
       width: 20px; height: 20px; border-radius: 50%;
       position: absolute;
       box-shadow: 0 0 5px rgba(255,255,255,0.3);
@@ -212,7 +212,7 @@
           }
           await new Promise(r => setTimeout(r, 1000));
           div.style.opacity = '0';
-          await new Promise(r => setTimeout(r, 308));
+          await new Promise(r => setTimeout(r, 310));
           div.style.opacity = '1';
         }
       }
