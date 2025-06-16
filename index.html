@@ -47,6 +47,62 @@
       50% { opacity: 0; }
       100% { opacity: 1; }
     }
+    #secretMessage {
+      color: #fff;
+      text-shadow: 0 0 8px rgba(255,255,255,0.4);
+      font-size: 1.6rem;
+      text-align: center;
+      max-width: 80%;
+      animation: fadeInBg 3s ease-in-out forwards;
+    }
+    
+    #secretScreen {
+      background: radial-gradient(ellipse at center, #1a1a2e 0%, #0f0f1f 100%);
+      animation: fadeIn 2s ease-in-out forwards;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes fadeInBg {
+      0% { background: #000; }
+      100% { background: radial-gradient(ellipse at center, #1a1a2e 0%, #0f0f1f 100%); }
+    }
+    
+    .typing-cursor::after {
+      content: '|';
+      animation: blinkCursor 1s steps(1) infinite;
+    }
+    @keyframes blinkCursor {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    
+    .fade-in-line {
+      animation: fadeLine 2s ease-in;
+    }
+    @keyframes fadeLine {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .return-button {
+      margin-top: 30px;
+      padding: 10px 24px;
+      font-size: 1rem;
+      border-radius: 8px;
+      background: linear-gradient(to right, #ff9a9e, #fad0c4);
+      border: none;
+      color: #333;
+      box-shadow: 0 0 10px rgba(255,255,255,0.3);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .return-button:hover {
+      transform: scale(1.05);
+    }
 
     #fireworks { position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none; display:none; }
 
@@ -159,42 +215,55 @@
       document.querySelector('.container').style.display = 'none';
     
       // 4. 顯示訊息畫面（打字效果）
+      secretVideo.addEventListener('ended', async () => {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen().catch(() => {});
+      }
+    
+      secretVideo.style.width = '180px';
+      secretVideo.style.height = '100px';
+      secretVideo.style.position = 'absolute';
+      secretVideo.style.bottom = '20px';
+      secretVideo.style.right = '20px';
+      secretVideo.controls = false;
+    
       const secretScreen = document.getElementById('secretScreen');
       secretScreen.style.display = 'flex';
-      secretScreen.innerHTML = `<div id="secretMessage" style="max-width:80%; font-size:1.8rem; text-align:center;"></div>`;
+      secretScreen.innerHTML = `<div id="secretMessage"></div>`;
     
       const messages = [
-        "其實這些都是我偷偷做的 😊",
-        "雖然有點手忙腳亂，但很開心你能看到這裡",
-        "這些話我也許平常不敢說...",
-        "但今天，就想好好說出來",
-        "謝謝你的出現",
-        "希望你一直快樂下去 🎂"
+        "這些其實我默默準備了好久 🕊️",
+        "有點緊張，但更想讓你開心 💝",
+        "謝謝你一直都在 🌟",
+        "如果有一天覺得世界不夠溫柔",
+        "那就記得這裡，記得我 ✨",
+        "因為… 你值得所有的溫柔與祝福 💫"
       ];
     
       const msgDiv = document.getElementById("secretMessage");
     
       for (let i = 0; i < messages.length; i++) {
         const p = document.createElement("p");
-        p.className = "typing-cursor";
+        p.className = "typing-cursor fade-in-line";
         msgDiv.appendChild(p);
     
-        for (let j = 0; j <= messages[i].length; j++) {
+        for (let j = 1; j <= messages[i].length; j++) {
           p.textContent = messages[i].slice(0, j);
-          await new Promise(r => setTimeout(r, 80));
+          // 可加入每字一聲音：new Audio('key.mp3').play();
+          await new Promise(r => setTimeout(r, 70));
         }
     
+        p.classList.remove("typing-cursor");
         await new Promise(r => setTimeout(r, 1000));
       }
     
-      // 5. 結束後顯示返回按鈕
+      // 結尾按鈕
       const backBtn = document.createElement("button");
-      backBtn.textContent = "返回主畫面 🎁";
-      backBtn.style.cssText = "margin-top:30px; padding:10px 20px; font-size:1rem; cursor:pointer;";
+      backBtn.textContent = "🎁 返回主畫面";
+      backBtn.className = "return-button";
       msgDiv.appendChild(backBtn);
     
       backBtn.addEventListener('click', () => {
-        // 隱藏秘密畫面，回到主畫面
         secretScreen.style.display = 'none';
         document.querySelector('.container').style.display = 'flex';
         document.getElementById('background').style.display = 'block';
