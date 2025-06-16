@@ -61,6 +61,7 @@
   <!-- 隱藏影片播放畫面 -->
   <div id="secretScreen">
     <video id="secretVideo" controls playsinline webkit-playsinline></video>
+    <div id="secretMessage" style="margin-top: 20px; font-size: 1.6rem; color: #fff; white-space: pre-wrap; text-align: center;"></div>
   </div>
 
   <canvas id="fireworks"></canvas>
@@ -130,7 +131,18 @@
     });
 
     const secretVideo = document.getElementById('secretVideo');
-    secretVideo.addEventListener('ended', () => {
+    secretVideo.addEventListener('ended', async () => {
+      const messageText = `如果有什麼事讓你開心、難過的事，\n都可以來找我聊聊天~\n不是客套話，我說的話，一直都作數。🙂`;
+      const messageDiv = document.getElementById('secretMessage');
+      messageDiv.textContent = '';
+    
+      for (let i = 0; i < messageText.length; i++) {
+        messageDiv.textContent += messageText[i];
+        await new Promise(r => setTimeout(r, 80));
+      }
+    
+      // 停留幾秒再回到主畫面
+      await new Promise(r => setTimeout(r, 4000));
       document.getElementById('secretScreen').style.display = 'none';
       document.querySelector('.container').style.display = 'flex';
       document.getElementById('background').style.display = 'block';
