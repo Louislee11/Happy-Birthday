@@ -80,6 +80,7 @@
   <div id="secretScreen">
     <video id="secretVideo" controls playsinline webkit-playsinline></video>
     <div id="secretMessage" class="typing-cursor"></div>
+    <audio id="typeSound" src="type-sound.mp3" preload="auto"></audio>
   </div>
   <canvas id="fireworks"></canvas>
   <div class="container">
@@ -132,7 +133,21 @@
       document.getElementById('secretScreen').style.display = 'flex';
       document.querySelector('.container').style.display = 'none';
       document.getElementById('background').style.display = 'none';
-
+  
+    function exitFullscreen() {
+        if (document.fullscreenElement) {
+          document.exitFullscreen().catch(() => {});
+        } else if (document.webkitFullscreenElement) {
+          document.webkitExitFullscreen();
+        } else if (document.mozFullScreenElement) {
+          document.mozCancelFullScreen();
+        } else if (document.msFullscreenElement) {
+          document.msExitFullscreen();
+        }
+      }
+      
+  const typeSound = document.getElementById('typeSound');
+      
       video.play().then(() => {
         if (video.requestFullscreen) video.requestFullscreen();
       });
@@ -144,33 +159,31 @@
       }
     });
 
-    function typeSecretMessage(lines) {
-      const el = document.getElementById('secretMessage');
-      let idx = 0;
-      function showLine() {
-        if (idx >= lines.length) {
-          setTimeout(() => {
-            document.getElementById('secretScreen').style.display = 'none';
-            document.querySelector('.container').style.display = 'flex';
-            document.getElementById('background').style.display = 'block';
-          }, 3000);
-          return;
-        }
-        let line = lines[idx];
-        let text = '';
+
+    function typeLines(lines, container, onComplete) {
+      let index = 0;
+      function typeLine() {
+        if (index >= lines.length) return onComplete();
+        const div = document.createElement('div');
+        div.className = 'typing-line typing-cursor';
+        container.appendChild(div);
         let i = 0;
-        const interval = setInterval(() => {
-          text += line[i++];
-          el.textContent = text;
-          if (i >= line.length) {
-            clearInterval(interval);
-            el.textContent += '\n';
-            idx++;
-            setTimeout(showLine, 800);
+        function typeChar() {
+          if (i <= lines[index].length) {
+            div.textContent = lines[index].slice(0, i);
+            typeSound.currentTime = 0;
+            typeSound.play().catch(() => {});
+            i++;
+            setTimeout(typeChar, 80);
+          } else {
+            div.classList.remove('typing-cursor');
+            index++;
+            setTimeout(typeLine, 600);
           }
-        }, 100);
+        }
+        typeChar();
       }
-      showLine();
+      typeLine();
     }
 
     const canvas = document.getElementById('fireworks');
@@ -181,7 +194,7 @@
     class Particle {
       constructor(x, y, color) {
         const angle = Math.random() * 2 * Math.PI;
-        const speed = Math.random() * 2 + 2;
+        const speed = Math.random() * 2 + 1.5;
         this.x = x;
         this.y = y;
         this.dx = Math.cos(angle) * speed;
@@ -211,7 +224,7 @@
         const x = Math.random() * canvas.width;
         const y = Math.random() * canvas.height * 0.5;
         const baseHue = Math.floor(Math.random() * 360);
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 22; i++) {
           const color = `hsl(${(baseHue + Math.random()*60) % 360}, 100%, 60%)`;
           this.particles.push(new Particle(x, y, color));
         }
