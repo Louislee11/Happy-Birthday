@@ -136,19 +136,20 @@
       bg.appendChild(m);
     }
 
-    
     const special = document.createElement('div');
     special.className = 'special-meteor';
     
-    // 避免中心位置（中间30%-70%宽度 & 40%-60%高度），防止重叠礼物盒
-    let left, top;
+    // 迴圈確保星星不會出現在中間區域（大約是禮物盒位置）
+    let leftPercent, topPercent;
     do {
-      left = Math.random() * 100;
-      top = Math.random() * 100;
-    } while (left > 35 && left < 65 && top > 40 && top < 60);
+      leftPercent = Math.random() * 100;
+      topPercent = Math.random() * 100;
+    } while (leftPercent > 35 && leftPercent < 65 && topPercent > 40 && topPercent < 60);
     
-    special.style.left = left + '%';
-    special.style.top = top + '%';
+    // 設定位置
+    special.style.left = leftPercent + '%';
+    special.style.top = topPercent + '%';
+    
     document.body.appendChild(special);
 
     const secretScreen = document.getElementById('secretScreen');
