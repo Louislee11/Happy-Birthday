@@ -174,7 +174,7 @@
           i++;
           setTimeout(type, 100);
         } else {
-          setTimeout(() => showMessage(lines, index+1), 1500);
+          setTimeout(() => showMessage(lines, index+1), 1000);
         }
       }
       type();
@@ -197,7 +197,7 @@
 
     secretVideo.addEventListener('ended', () => {
       secretVideo.style.display = 'none';
-      showMessage(["Surprise~~", "無論是甜品還是這個", "都是我一次弄哦", "別嫌棄吖", "不好吃也得吃!!", "嘻嘻", "希望你喜歡 💖", "如果有一天過得不如意了", "回來這裡看看唄", "噢~對了", "生日快樂 ✨"]);
+      showMessage(["這都被你發現了呀", "不錯哦~", "挺細心的嘛 😏", "關於那段影片裡說的話…", "真的不是講爽的", "如果哪天你的開心想分享", "或不開心想逃避一下世界","都可以來找我聊聊",'我說的話","一直都作數 ☺️"]);
     });
 
     const canvas = document.getElementById('fireworks');
