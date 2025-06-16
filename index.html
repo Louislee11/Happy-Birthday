@@ -29,48 +29,17 @@
 
     #secretScreen {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: #000; z-index: 9999; color: white;
-      justify-content: center; align-items: center; flex-direction: column;
-    }
-    #secretVideo {
-      max-width: 100%;
-      max-height: 100%;
-      border: 4px solid #fff;
-      border-radius: 10px;
-    }
-    .typing-cursor::after {
-      content: '|';
-      animation: blinkCursor 1s steps(1) infinite;
-    }
-    @keyframes blinkCursor {
-      0% { opacity: 1; }
-      50% { opacity: 0; }
-      100% { opacity: 1; }
-    }
-    #secretMessage {
-      color: #fff;
-      text-shadow: 0 0 8px rgba(255,255,255,0.4);
-      font-size: 1.6rem;
-      text-align: center;
-      max-width: 80%;
-      animation: fadeInBg 3s ease-in-out forwards;
-    }
-    
-    #secretScreen {
       background: radial-gradient(ellipse at center, #1a1a2e 0%, #0f0f1f 100%);
+      z-index: 9999; color: white;
+      justify-content: center; align-items: center; flex-direction: column;
       animation: fadeIn 2s ease-in-out forwards;
     }
-    
+
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
     }
-    
-    @keyframes fadeInBg {
-      0% { background: #000; }
-      100% { background: radial-gradient(ellipse at center, #1a1a2e 0%, #0f0f1f 100%); }
-    }
-    
+
     .typing-cursor::after {
       content: '|';
       animation: blinkCursor 1s steps(1) infinite;
@@ -79,7 +48,7 @@
       0%,100% { opacity: 1; }
       50% { opacity: 0; }
     }
-    
+
     .fade-in-line {
       animation: fadeLine 2s ease-in;
     }
@@ -87,7 +56,21 @@
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    
+
+    #secretMessage {
+      color: #fff;
+      text-shadow: 0 0 8px rgba(255,255,255,0.4);
+      font-size: 1.6rem;
+      text-align: center;
+      max-width: 80%;
+      animation: fadeInBg 3s ease-in-out forwards;
+    }
+
+    @keyframes fadeInBg {
+      0% { background: #000; }
+      100% { background: radial-gradient(ellipse at center, #1a1a2e 0%, #0f0f1f 100%); }
+    }
+
     .return-button {
       margin-top: 30px;
       padding: 10px 24px;
