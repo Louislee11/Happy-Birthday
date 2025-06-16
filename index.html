@@ -141,43 +141,67 @@
 
     const secretVideo = document.getElementById('secretVideo');
     secretVideo.addEventListener('ended', async () => {
-    const video = document.getElementById('secretVideo');
-    const secretMsg = document.getElementById('secretMessage');
-  
-    // 最小化影片
-    video.style.width = '160px';
-    video.style.height = '90px';
-    video.style.position = 'absolute';
-    video.style.top = '20px';
-    video.style.right = '20px';
-    video.style.bottom = '20px';
-    video.style.left = '20px';
-  
-    // 顯示秘密文字容器
-    secretMsg.style.display = 'block';
-    secretMsg.innerHTML = ''; // 清空
-    secretMsg.classList.add('typing-cursor');
-  
-    // 秘密訊息段落（你可以換成你要寫的內容）
-    const lines = [
-      "謝謝你看到這裡。",
-      "這段影片我準備了好久，只希望你能感受到我的心意。",
-      "如果有一天你感到難過，記得回來看看。",
-      "因為這裡，有人偷偷祝你一直快樂 😊",
-      "祝你，生日快樂 🎂✨"
-    ];
-  
-    // 打字效果
-    for (let line of lines) {
-      for (let i = 1; i <= line.length; i++) {
-        secretMsg.textContent = secretMsg.textContent.replace('|', '') + line[i - 1];
-        await new Promise(r => setTimeout(r, 100));
+      // 1. 退出全螢幕（如有進入）
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
       }
-      secretMsg.textContent += '\n';
-      await new Promise(r => setTimeout(r, 700));
-    }
-  
-    secretMsg.classList.remove('typing-cursor');
+    
+      // 2. 最小化影片（右下角）
+      secretVideo.style.width = '180px';
+      secretVideo.style.height = '100px';
+      secretVideo.style.position = 'absolute';
+      secretVideo.style.bottom = '20px';
+      secretVideo.style.right = '20px';
+      secretVideo.controls = false;
+    
+      // 3. 清空畫面，準備打字效果畫面
+      document.getElementById('background').style.display = 'none';
+      document.querySelector('.container').style.display = 'none';
+    
+      // 4. 顯示訊息畫面（打字效果）
+      const secretScreen = document.getElementById('secretScreen');
+      secretScreen.style.display = 'flex';
+      secretScreen.innerHTML = `<div id="secretMessage" style="max-width:80%; font-size:1.8rem; text-align:center;"></div>`;
+    
+      const messages = [
+        "其實這些都是我偷偷做的 😊",
+        "雖然有點手忙腳亂，但很開心你能看到這裡",
+        "這些話我也許平常不敢說...",
+        "但今天，就想好好說出來",
+        "謝謝你的出現",
+        "希望你一直快樂下去 🎂"
+      ];
+    
+      const msgDiv = document.getElementById("secretMessage");
+    
+      for (let i = 0; i < messages.length; i++) {
+        const p = document.createElement("p");
+        p.className = "typing-cursor";
+        msgDiv.appendChild(p);
+    
+        for (let j = 0; j <= messages[i].length; j++) {
+          p.textContent = messages[i].slice(0, j);
+          await new Promise(r => setTimeout(r, 80));
+        }
+    
+        await new Promise(r => setTimeout(r, 1000));
+      }
+    
+      // 5. 結束後顯示返回按鈕
+      const backBtn = document.createElement("button");
+      backBtn.textContent = "返回主畫面 🎁";
+      backBtn.style.cssText = "margin-top:30px; padding:10px 20px; font-size:1rem; cursor:pointer;";
+      msgDiv.appendChild(backBtn);
+    
+      backBtn.addEventListener('click', () => {
+        // 隱藏秘密畫面，回到主畫面
+        secretScreen.style.display = 'none';
+        document.querySelector('.container').style.display = 'flex';
+        document.getElementById('background').style.display = 'block';
+        document.getElementById('secretScreen').innerHTML = `
+          <video id="secretVideo" controls playsinline webkit-playsinline></video>
+        `;
+      });
     });
 
     // 煙花動畫
