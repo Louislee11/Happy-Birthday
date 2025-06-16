@@ -179,20 +179,15 @@
       function type() {
         if (i <= lines[index].length) {
           secretMessage.textContent = lines[index].slice(0, i);
-      
-          try {
-            const sound = typeSound.cloneNode();
-            sound.play().catch(() => {});
-          } catch (e) {
-            console.warn('打字音效播放錯誤', e);
-          }
-      
+          typeSound.currentTime = 0;
+          typeSound.play().catch(() => {});
           i++;
           setTimeout(type, 100);
         } else {
           setTimeout(() => showMessage(lines, index + 1), 1000);
         }
       }
+      typeSound.pause();
       type();
     }
     special.addEventListener('click', () => {
