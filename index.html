@@ -138,9 +138,16 @@
 
     const special = document.createElement('div');
     special.className = 'special-meteor';
-    special.style.left = Math.random()*90 + '%';
-    special.style.top = Math.random()*90 + '%';
-    document.body.appendChild(special);
+    
+    // 避免中心位置（中间30%-70%宽度 & 40%-60%高度），防止重叠礼物盒
+    let left, top;
+    do {
+      left = Math.random() * 100;
+      top = Math.random() * 100;
+    } while (left > 35 && left < 65 && top > 40 && top < 60);
+    
+    special.style.left = left + '%';
+    special.style.top = top + '%';
 
     const secretScreen = document.getElementById('secretScreen');
     const secretVideo = document.getElementById('secretVideo');
