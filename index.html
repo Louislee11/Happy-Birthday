@@ -38,6 +38,15 @@
       border: 4px solid #fff;
       border-radius: 10px;
     }
+    .typing-cursor::after {
+      content: '|';
+      animation: blinkCursor 1s steps(1) infinite;
+    }
+    @keyframes blinkCursor {
+      0% { opacity: 1; }
+      50% { opacity: 0; }
+      100% { opacity: 1; }
+    }
 
     #fireworks { position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none; display:none; }
 
@@ -61,7 +70,7 @@
   <!-- 隱藏影片播放畫面 -->
   <div id="secretScreen">
     <video id="secretVideo" controls playsinline webkit-playsinline></video>
-    <div id="secretMessage" style="margin-top: 20px; font-size: 1.6rem; color: #fff; white-space: pre-wrap; text-align: center;"></div>
+    <div id="secretMessage" style="display:none; margin-top: 20px; font-size: 1.6rem; line-height: 2; white-space: pre-wrap; max-width: 80%; text-align: center;"></div>
   </div>
 
   <canvas id="fireworks"></canvas>
@@ -132,20 +141,41 @@
 
     const secretVideo = document.getElementById('secretVideo');
     secretVideo.addEventListener('ended', async () => {
-      const messageText = `如果有什麼事讓你開心、難過的事，\n都可以來找我聊聊天~\n不是客套話，我說的話，一直都作數。🙂`;
-      const messageDiv = document.getElementById('secretMessage');
-      messageDiv.textContent = '';
-    
-      for (let i = 0; i < messageText.length; i++) {
-        messageDiv.textContent += messageText[i];
-        await new Promise(r => setTimeout(r, 80));
+    const video = document.getElementById('secretVideo');
+    const secretMsg = document.getElementById('secretMessage');
+  
+    // 最小化影片
+    video.style.width = '160px';
+    video.style.height = '90px';
+    video.style.position = 'absolute';
+    video.style.top = '20px';
+    video.style.right = '20px';
+  
+    // 顯示秘密文字容器
+    secretMsg.style.display = 'block';
+    secretMsg.innerHTML = ''; // 清空
+    secretMsg.classList.add('typing-cursor');
+  
+    // 秘密訊息段落（你可以換成你要寫的內容）
+    const lines = [
+      "謝謝你看到這裡。",
+      "這段影片我準備了好久，只希望你能感受到我的心意。",
+      "如果有一天你感到難過，記得回來看看。",
+      "因為這裡，有人偷偷祝你一直快樂 😊",
+      "祝你，生日快樂 🎂✨"
+    ];
+  
+    // 打字效果
+    for (let line of lines) {
+      for (let i = 1; i <= line.length; i++) {
+        secretMsg.textContent = secretMsg.textContent.replace('|', '') + line[i - 1];
+        await new Promise(r => setTimeout(r, 100));
       }
-    
-      // 停留幾秒再回到主畫面
-      await new Promise(r => setTimeout(r, 4000));
-      document.getElementById('secretScreen').style.display = 'none';
-      document.querySelector('.container').style.display = 'flex';
-      document.getElementById('background').style.display = 'block';
+      secretMsg.textContent += '\n';
+      await new Promise(r => setTimeout(r, 700));
+    }
+  
+    secretMsg.classList.remove('typing-cursor');
     });
 
     // 煙花動畫
