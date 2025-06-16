@@ -197,7 +197,7 @@
 
     secretVideo.addEventListener('ended', () => {
       secretVideo.style.display = 'none';
-      showMessage(["這都被你發現了呀", "不錯哦~", "挺細心的嘛 😏", "關於那段影片裡說的話…", "真的不是講爽的", "如果哪天你的開心想分享", "或不開心想逃避一下世界","都可以來找我聊聊","我說的話","一直都作數 ☺️"]);
+      showMessage(["YIII？這都被你發現了啊～", "不錯哦~", "很細心唷 😏", "影片裡那段話…", "真的不是講爽的", "或者只是突然很想講幾句廢話","都可以來找我聊聊","我說的話","一直都作數 ☺️","如果你願意的话啦"]);
     });
 
     const canvas = document.getElementById('fireworks');
@@ -281,7 +281,7 @@
         msgC.appendChild(div);
         for (let j = 1; j <= msgs[i].length; j++) {
           div.textContent = msgs[i].slice(0, j);
-          await new Promise(r => setTimeout(r, 120));
+          await new Promise(r => setTimeout(r, 110));
         }
       await new Promise(r => setTimeout(r, 1000));
       }
