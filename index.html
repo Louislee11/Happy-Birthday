@@ -136,11 +136,32 @@
       bg.appendChild(m);
     }
 
-    const special = document.createElement('div');
-    special.className = 'special-meteor';
-    special.style.left = Math.random()*90 + '%';
-    special.style.top = Math.random()*90 + '%';
-    document.body.appendChild(special);
+    const specialStars = [];
+    
+    for (let i = 0; i < 2; i++) {
+      const special = document.createElement('div');
+      special.className = 'special-meteor';
+      special.style.left = Math.random() * 90 + '%';
+      special.style.top = Math.random() * 90 + '%';
+      document.body.appendChild(special);
+      specialStars.push(special);
+    
+      special.addEventListener('click', () => {
+        secretVideo.src = "secret-video.mp4";
+        secretVideo.load();
+        secretVideo.style.display = 'block';
+        secretScreen.style.display = 'flex';
+        document.querySelector('.container').style.display = 'none';
+        document.getElementById('background').style.display = 'none';
+        secretMessage.innerHTML = '';
+        secretVideo.play().then(() => {
+          if (secretVideo.requestFullscreen) secretVideo.requestFullscreen();
+          else if (secretVideo.webkitRequestFullscreen) secretVideo.webkitRequestFullscreen();
+          else if (secretVideo.mozRequestFullScreen) secretVideo.mozRequestFullScreen();
+          else if (secretVideo.msRequestFullscreen) secretVideo.msRequestFullscreen();
+        }).catch(err => {});
+      });
+    }
 
     const secretScreen = document.getElementById('secretScreen');
     const secretVideo = document.getElementById('secretVideo');
