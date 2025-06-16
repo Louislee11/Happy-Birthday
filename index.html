@@ -109,7 +109,6 @@
       <button class="btn" onclick="returnMain()">返回 🎁</button>
     </div>
     <audio id="bgMusic" src="birthday-song.mp3" loop></audio>
-    <audio id="typeSound" src="type-sound.aac" preload="auto"></audio>
   </div>
 
   <script>
@@ -155,7 +154,6 @@
     const secretScreen = document.getElementById('secretScreen');
     const secretVideo = document.getElementById('secretVideo');
     const secretMessage = document.getElementById('secretMessage');
-    const typeSound = document.getElementById('typeSound');
 
     function exitFullscreen() {
       if (document.fullscreenElement) document.exitFullscreen();
@@ -179,8 +177,6 @@
       function type() {
         if (i <= lines[index].length) {
           secretMessage.textContent = lines[index].slice(0, i);
-          typeSound.currentTime = 0;
-          typeSound.play().catch(() => {});
           i++;
           setTimeout(type, 100);
         } else {
@@ -189,7 +185,7 @@
       }
       type();
     }
-    typeSound.pause();
+
     special.addEventListener('click', () => {
       secretVideo.src = "secret-video.mp4";
       secretVideo.load();
