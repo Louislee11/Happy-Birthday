@@ -180,8 +180,12 @@
         if (i <= lines[index].length) {
           secretMessage.textContent = lines[index].slice(0, i);
       
-          const sound = typeSound.cloneNode();
-          sound.play().catch(() => {});
+          try {
+            const sound = typeSound.cloneNode();
+            sound.play().catch(() => {});
+          } catch (e) {
+            console.warn('打字音效播放錯誤', e);
+          }
       
           i++;
           setTimeout(type, 100);
@@ -189,7 +193,6 @@
           setTimeout(() => showMessage(lines, index + 1), 1000);
         }
       }
-    }
 
     special.addEventListener('click', () => {
       secretVideo.src = "secret-video.mp4";
