@@ -179,16 +179,16 @@
       function type() {
         if (i <= lines[index].length) {
           secretMessage.textContent = lines[index].slice(0, i);
-          typeSound.currentTime = 0;
-          typeSound.play().catch(()=>{});
+      
+          const sound = typeSound.cloneNode();
+          sound.play().catch(() => {});
+      
           i++;
           setTimeout(type, 100);
         } else {
-          setTimeout(() => showMessage(lines, index+1), 1000);
+          setTimeout(() => showMessage(lines, index + 1), 1000);
         }
       }
-      type();
-    }
 
     special.addEventListener('click', () => {
       secretVideo.src = "secret-video.mp4";
